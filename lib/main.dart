@@ -60,14 +60,20 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
               ),
-              SignInButton(
-                Buttons.Facebook,
-                onPressed: () {},
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SignInButton(
+                  Buttons.Facebook,
+                  onPressed: () {},
+                ),
               ),
-              SignInButton(
-                Buttons.Google,
-                text: "Sign up with Google",
-                onPressed: () {},
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SignInButton(
+                  Buttons.Google,
+                  text: "Sign up with Google",
+                  onPressed: () {},
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
