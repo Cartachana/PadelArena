@@ -3,6 +3,7 @@ import 'package:flutter_signin_button/flutter_signin_button.dart';
 //import 'package:flutter/services.dart';
 import './loginForm.dart';
 import './logInButton.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 void main() {
   runApp(MyApp());
@@ -60,14 +61,20 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
               ),
-              SignInButton(
-                Buttons.Facebook,
-                onPressed: () {},
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SignInButton(
+                  Buttons.Facebook,
+                  onPressed: () {},
+                ),
               ),
-              SignInButton(
-                Buttons.Google,
-                text: "Sign up with Google",
-                onPressed: () {},
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SignInButton(
+                  Buttons.Google,
+                  text: "Sign up with Google",
+                  onPressed: () {},
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
