@@ -4,6 +4,8 @@ import 'package:flutter_signin_button/flutter_signin_button.dart';
 import './loginForm.dart';
 import './logInButton.dart';
 import 'package:firebase_core/firebase_core.dart';
+import './register_screen.dart';
+import 'package:flutter/gestures.dart';
 
 void main() {
   runApp(MyApp());
@@ -78,12 +80,28 @@ class HomePage extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Ainda nao e cliente? Registe-se aqui',
-                  style: TextStyle(
-                    color: Colors.lime,
-                    fontSize: 15,
-                  ),
+                child: RichText(
+                  text: TextSpan(children: [
+                    TextSpan(
+                      text: 'Ainda nao e cliente? Registe-se ',
+                      style: TextStyle(
+                        color: Colors.lime,
+                      ),
+                    ),
+                    TextSpan(
+                        text: 'aqui',
+                        style: TextStyle(
+                          color: Colors.lime,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.of(context)
+                                .push(MaterialPageRoute(builder: (_) {
+                              return RegisterScreen();
+                            }));
+                          }),
+                  ]),
                 ),
               ),
             ],
