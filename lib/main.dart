@@ -16,6 +16,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Cork Padel',
+      theme: ThemeData(
+        primarySwatch: Colors.lime,
+      ),
       home: HomePage(),
     );
   }
@@ -48,7 +51,7 @@ class HomePage extends StatelessWidget {
                 style: TextStyle(
                   fontFamily: 'Roboto Condensed',
                   fontSize: 26,
-                  color: Colors.lime,
+                  color: Theme.of(context).primaryColor,
                 ),
               ),
               loginForm(),
@@ -58,7 +61,7 @@ class HomePage extends StatelessWidget {
                 child: Text(
                   'ou entrar com',
                   style: TextStyle(
-                    color: Colors.lime,
+                    color: Theme.of(context).primaryColor,
                     fontSize: 15,
                   ),
                 ),
@@ -85,19 +88,19 @@ class HomePage extends StatelessWidget {
                     TextSpan(
                       text: 'Ainda nao e cliente? Registe-se ',
                       style: TextStyle(
-                        color: Colors.lime,
+                        color: Theme.of(context).primaryColor,
                       ),
                     ),
                     TextSpan(
                         text: 'aqui',
                         style: TextStyle(
-                          color: Colors.lime,
+                          color: Theme.of(context).primaryColor,
                           fontWeight: FontWeight.bold,
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
-                            Navigator.of(context)
-                                .push(MaterialPageRoute(builder: (_) {
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(builder: (_) {
                               return RegisterScreen();
                             }));
                           }),
