@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 //import 'package:flutter/services.dart';
 import './loginForm.dart';
-import './logInButton.dart';
 //import 'package:firebase_core/firebase_core.dart';
 import 'register/register_screen.dart';
 import 'package:flutter/gestures.dart';
@@ -25,7 +24,6 @@ class MyApp extends StatelessWidget {
 }
 
 class HomePage extends StatelessWidget {
-  void doNothing() {}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,7 +56,6 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
                 LoginForm(),
-                LogInButton(doNothing),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(

@@ -22,6 +22,7 @@ environment:
   flutter_signin_button: ^2.0.0
 
 dependencies:
+  http: ^0.13.3
   flutter:
     sdk: flutter
     # Add the dependency for the Firebase Core Flutter SDK

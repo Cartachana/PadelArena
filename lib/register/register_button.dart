@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class RegisterButton extends StatelessWidget {
-  final VoidCallback selectHandler;
+  final Function selectHandler;
 
   RegisterButton(this.selectHandler);
 
