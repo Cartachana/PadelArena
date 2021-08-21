@@ -1,0 +1,149 @@
+Target dependency graph (44 targets)
+BoringSSL-GRPC-framework in Pods
+BoringSSL-GRPC-library in Pods
+PromisesObjC-framework in Pods
+GoogleUtilities-framework in Pods, depends on:
+PromisesObjC-framework in Pods (explicit)
+nanopb-framework in Pods
+GoogleDataTransport-framework in Pods, depends on:
+GoogleUtilities-framework in Pods (explicit)
+PromisesObjC-framework in Pods (explicit)
+nanopb-framework in Pods (explicit)
+FirebaseCoreDiagnostics-framework in Pods, depends on:
+GoogleDataTransport-framework in Pods (explicit)
+GoogleUtilities-framework in Pods (explicit)
+nanopb-framework in Pods (explicit)
+FirebaseCore-framework in Pods, depends on:
+FirebaseCoreDiagnostics-framework in Pods (explicit)
+GoogleUtilities-framework in Pods (explicit)
+FirebaseInstallations-framework in Pods, depends on:
+FirebaseCore-framework in Pods (explicit)
+GoogleUtilities-framework in Pods (explicit)
+PromisesObjC-framework in Pods (explicit)
+GoogleAppMeasurement-framework in Pods, depends on:
+GoogleUtilities-framework in Pods (explicit)
+nanopb-framework in Pods (explicit)
+FirebaseAnalytics-framework in Pods, depends on:
+FirebaseCore-framework in Pods (explicit)
+FirebaseInstallations-framework in Pods (explicit)
+GoogleAppMeasurement-framework in Pods (explicit)
+GoogleUtilities-framework in Pods (explicit)
+nanopb-framework in Pods (explicit)
+GTMSessionFetcher-framework in Pods
+FirebaseAuth-framework in Pods, depends on:
+FirebaseCore-framework in Pods (explicit)
+GTMSessionFetcher-framework in Pods (explicit)
+GoogleUtilities-framework in Pods (explicit)
+abseil-framework in Pods
+gRPC-C++-framework-gRPCCertificates-Cpp in Pods
+gRPC-Core-framework in Pods, depends on:
+BoringSSL-GRPC-framework in Pods (explicit)
+abseil-framework in Pods (explicit)
+gRPC-C++-framework in Pods, depends on:
+abseil-framework in Pods (explicit)
+gRPC-C++-framework-gRPCCertificates-Cpp in Pods (explicit)
+gRPC-Core-framework in Pods (explicit)
+leveldb-library-framework in Pods
+FirebaseFirestore-framework in Pods, depends on:
+FirebaseCore-framework in Pods (explicit)
+abseil-framework in Pods (explicit)
+gRPC-C++-framework in Pods (explicit)
+leveldb-library-framework in Pods (explicit)
+nanopb-framework in Pods (explicit)
+Firebase-framework in Pods, depends on:
+FirebaseAnalytics-framework in Pods (explicit)
+FirebaseAuth-framework in Pods (explicit)
+FirebaseCore-framework in Pods (explicit)
+FirebaseFirestore-framework in Pods (explicit)
+PromisesObjC-library in Pods
+GoogleUtilities-library in Pods, depends on:
+PromisesObjC-library in Pods (explicit)
+nanopb-library in Pods
+GoogleDataTransport-library in Pods, depends on:
+GoogleUtilities-library in Pods (explicit)
+PromisesObjC-library in Pods (explicit)
+nanopb-library in Pods (explicit)
+FirebaseCoreDiagnostics-library in Pods, depends on:
+GoogleDataTransport-library in Pods (explicit)
+GoogleUtilities-library in Pods (explicit)
+nanopb-library in Pods (explicit)
+FirebaseCore-library in Pods, depends on:
+FirebaseCoreDiagnostics-library in Pods (explicit)
+GoogleUtilities-library in Pods (explicit)
+FirebaseInstallations-library in Pods, depends on:
+FirebaseCore-library in Pods (explicit)
+GoogleUtilities-library in Pods (explicit)
+PromisesObjC-library in Pods (explicit)
+GoogleAppMeasurement-library in Pods, depends on:
+GoogleUtilities-library in Pods (explicit)
+nanopb-library in Pods (explicit)
+FirebaseAnalytics-library in Pods, depends on:
+FirebaseCore-library in Pods (explicit)
+FirebaseInstallations-library in Pods (explicit)
+GoogleAppMeasurement-library in Pods (explicit)
+GoogleUtilities-library in Pods (explicit)
+nanopb-library in Pods (explicit)
+GTMSessionFetcher-library in Pods
+FirebaseAuth-library in Pods, depends on:
+FirebaseCore-library in Pods (explicit)
+GTMSessionFetcher-library in Pods (explicit)
+GoogleUtilities-library in Pods (explicit)
+abseil-library in Pods
+gRPC-C++-library-gRPCCertificates-Cpp in Pods
+gRPC-Core-library in Pods, depends on:
+BoringSSL-GRPC-library in Pods (explicit)
+abseil-library in Pods (explicit)
+gRPC-C++-library in Pods, depends on:
+abseil-library in Pods (explicit)
+gRPC-C++-library-gRPCCertificates-Cpp in Pods (explicit)
+gRPC-Core-library in Pods (explicit)
+leveldb-library-library in Pods
+FirebaseFirestore-library in Pods, depends on:
+FirebaseCore-library in Pods (explicit)
+abseil-library in Pods (explicit)
+gRPC-C++-library in Pods (explicit)
+leveldb-library-library in Pods (explicit)
+nanopb-library in Pods (explicit)
+Firebase-library in Pods, depends on:
+FirebaseAnalytics-library in Pods (explicit)
+FirebaseAuth-library in Pods (explicit)
+FirebaseCore-library in Pods (explicit)
+FirebaseFirestore-library in Pods (explicit)
+Flutter in Pods
+firebase_core in Pods, depends on:
+Firebase-framework in Pods (explicit)
+Flutter in Pods (explicit)
+cloud_firestore in Pods, depends on:
+Firebase-framework in Pods (explicit)
+Flutter in Pods (explicit)
+firebase_core in Pods (explicit)
+firebase_auth in Pods, depends on:
+Firebase-framework in Pods (explicit)
+Flutter in Pods (explicit)
+firebase_core in Pods (explicit)
+path_provider in Pods, depends on:
+Flutter in Pods (explicit)
+Pods-Runner in Pods, depends on:
+BoringSSL-GRPC-framework in Pods (explicit)
+Firebase-framework in Pods (explicit)
+FirebaseAnalytics-framework in Pods (explicit)
+FirebaseAuth-framework in Pods (explicit)
+FirebaseCore-framework in Pods (explicit)
+FirebaseCoreDiagnostics-framework in Pods (explicit)
+FirebaseFirestore-framework in Pods (explicit)
+FirebaseInstallations-framework in Pods (explicit)
+Flutter in Pods (explicit)
+GTMSessionFetcher-framework in Pods (explicit)
+GoogleAppMeasurement-framework in Pods (explicit)
+GoogleDataTransport-framework in Pods (explicit)
+GoogleUtilities-framework in Pods (explicit)
+PromisesObjC-framework in Pods (explicit)
+abseil-framework in Pods (explicit)
+cloud_firestore in Pods (explicit)
+firebase_auth in Pods (explicit)
+firebase_core in Pods (explicit)
+gRPC-C++-framework in Pods (explicit)
+gRPC-Core-framework in Pods (explicit)
+leveldb-library-framework in Pods (explicit)
+nanopb-framework in Pods (explicit)
+path_provider in Pods (explicit)
