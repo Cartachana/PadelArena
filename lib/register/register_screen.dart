@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import './register_button.dart';
 import '../models/user.dart';
 
@@ -9,9 +10,11 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _form = GlobalKey<FormState>();
+  FirebaseAuth auth = FirebaseAuth.instance;
+
   final TextEditingController _pass = TextEditingController();
 
-  var _user = User(
+  var _user = new Userr(
       id: null,
       name: '',
       surname: '',
@@ -28,8 +31,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
     _form.currentState.save();
-    print(_user.password);
-    print(_user.name);
+    // try{
+    //   FirebaseUser userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _user.email, password: _user.password);
+    // }
   }
 
   @override

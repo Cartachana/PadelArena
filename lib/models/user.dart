@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
-class User {
+class Userr {
   String id;
   String name;
   String surname;
@@ -11,7 +11,7 @@ class User {
   String email;
   String password;
 
-  User(
+  Userr(
       {@required this.id,
       @required this.name,
       @required this.surname,
