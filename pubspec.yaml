@@ -25,6 +25,7 @@ dependencies:
   http: ^0.13.3
   flutter:
     sdk: flutter
+  firebase_core : ^0.5.0
   cloud_firestore: ^1.0.0 # new
   firebase_auth: ^1.0.0   # new
   google_fonts: ^2.0.0

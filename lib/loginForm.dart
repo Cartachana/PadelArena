@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import './models/logged_user.dart';
 import './logInButton.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 //import 'package:firebase_core/firebase_core.dart';
 
 class LoginForm extends StatefulWidget {
@@ -12,7 +16,7 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  FirebaseAuth auth = FirebaseAuth.instance;
+  //FirebaseAuth auth = FirebaseAuth.instance;
   final _form = GlobalKey<FormState>();
 
   var _loggedUser = LoggedUser(email: '', password: '');
