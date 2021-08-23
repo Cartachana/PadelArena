@@ -3,19 +3,48 @@ import 'package:firebase_auth/firebase_auth.dart';
 import './register_button.dart';
 import '../models/user.dart';
 
+enum ApplicationLoginState {
+  loggedOut,
+  emailAddress,
+  register,
+  password,
+  loggedIn,
+}
+
 class RegisterScreen extends StatefulWidget {
+  // final ApplicationLoginState loginState;
+  // final String? email;
+  // final void Function() startLoginFlow;
+  // final void Function(
+  //   String email,
+  //   void Function(Exception e) error,
+  // ) verifyEmail;
+  // final void Function(
+  //   String email,
+  //   String password,
+  //   void Function(Exception e) error,
+  // ) signInWithEmailAndPassword;
+  // final void Function() cancelRegistration;
+  // final void Function(
+  //   String email,
+  //   String displayName,
+  //   String password,
+  //   void Function(Exception e) error,
+  // ) registerAccount;
+  // final void Function() signOut;
+
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _form = GlobalKey<FormState>();
-  //FirebaseAuth auth = FirebaseAuth.instance;
+  FirebaseAuth auth = FirebaseAuth.instance;
 
   final TextEditingController _pass = TextEditingController();
 
   var _user = new Userr(
-      id: null,
+      id: '',
       name: '',
       surname: '',
       address: '',
@@ -26,14 +55,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       password: '');
 
   void _saveForm() {
-    final isValid = _form.currentState.validate();
+    final isValid = _form.currentState!.validate();
     if (!isValid) {
       return;
     }
-    _form.currentState.save();
-    // try{
-    //   FirebaseUser userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _user.email, password: _user.password);
-    // }
+    _form.currentState!.save();
   }
 
   @override
@@ -100,10 +126,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         // errorText: 'Error Text',
                                       ),
                                       onSaved: (value) {
-                                        _user.name = value;
+                                        _user.name = value.toString();
                                       },
                                       validator: (value) {
-                                        if (value.isEmpty) {
+                                        if (value!.isEmpty) {
                                           return 'Obrigatorio';
                                         }
                                         return null;
@@ -138,10 +164,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         // errorText: 'Error Text',
                                       ),
                                       onSaved: (value) {
-                                        _user.surname = value;
+                                        _user.surname = value.toString();
                                       },
                                       validator: (value) {
-                                        if (value.isEmpty) {
+                                        if (value!.isEmpty) {
                                           return 'Obrigatorio';
                                         }
                                         return null;
@@ -172,10 +198,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               // errorText: 'Error Text',
                             ),
                             onSaved: (value) {
-                              _user.address = value;
+                              _user.address = value.toString();
                             },
                             validator: (value) {
-                              if (value.isEmpty) {
+                              if (value!.isEmpty) {
                                 return 'Obrigatorio';
                               }
                               return null;
@@ -208,10 +234,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     // errorText: 'Error Text',
                                   ),
                                   onSaved: (value) {
-                                    _user.city = value;
+                                    _user.city = value.toString();
                                   },
                                   validator: (value) {
-                                    if (value.isEmpty) {
+                                    if (value!.isEmpty) {
                                       return 'Obrigatorio';
                                     }
                                     return null;
@@ -244,10 +270,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     // errorText: 'Error Text',
                                   ),
                                   onSaved: (value) {
-                                    _user.postCode = value;
+                                    _user.postCode = value.toString();
                                   },
                                   validator: (value) {
-                                    if (value.isEmpty) {
+                                    if (value!.isEmpty) {
                                       return 'Obrigatorio';
                                     }
                                     return null;
@@ -280,10 +306,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               // errorText: 'Error Text',
                             ),
                             onSaved: (value) {
-                              _user.nif = double.parse(value);
+                              _user.nif = double.parse(value.toString());
                             },
                             validator: (value) {
-                              if (value.isEmpty) {
+                              if (value!.isEmpty) {
                                 return 'Obrigatorio';
                               }
                               if (double.tryParse(value) == null ||
@@ -317,10 +343,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               // errorText: 'Error Text',
                             ),
                             onSaved: (value) {
-                              _user.email = value;
+                              _user.email = value.toString();
                             },
                             validator: (value) {
-                              if (value.isEmpty) {
+                              if (value!.isEmpty) {
                                 return 'Obrigatorio';
                               }
                               return null;
@@ -349,11 +375,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               // errorText: 'Error Text',
                             ),
                             onSaved: (value) {
-                              _user.password = value;
+                              _user.password = value.toString();
                             },
                             controller: _pass,
                             validator: (value) {
-                              if (value.isEmpty) {
+                              if (value!.isEmpty) {
                                 return 'Obrigatorio';
                               }
                               return null;
@@ -381,7 +407,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               // errorText: 'Error Text',
                             ),
                             validator: (value) {
-                              if (value.isEmpty) {
+                              if (value!.isEmpty) {
                                 return 'Obrigatorio';
                               }
                               if (value != _pass.text) {
