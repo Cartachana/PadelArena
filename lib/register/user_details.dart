@@ -30,6 +30,15 @@ class UserDetails extends StatefulWidget {
 
 class _UserDetailsState extends State<UserDetails> {
   final _form = GlobalKey<FormState>();
+  String _id = '';
+  String _role = 'utilisador';
+  String _name = '';
+  String _surname = '';
+  String _address = '';
+  String _city = '';
+  String _postCode = '';
+  num _nif = 0;
+  String _email = '';
 
   var _user = new Userr(
     id: '',
@@ -115,7 +124,7 @@ class _UserDetailsState extends State<UserDetails> {
                                         // errorText: 'Error Text',
                                       ),
                                       onSaved: (value) {
-                                        _user.name = value.toString();
+                                        _name = value.toString();
                                       },
                                       validator: (value) {
                                         if (value!.isEmpty) {
@@ -153,7 +162,7 @@ class _UserDetailsState extends State<UserDetails> {
                                         // errorText: 'Error Text',
                                       ),
                                       onSaved: (value) {
-                                        _user.surname = value.toString();
+                                        _surname = value.toString();
                                       },
                                       validator: (value) {
                                         if (value!.isEmpty) {
@@ -187,7 +196,7 @@ class _UserDetailsState extends State<UserDetails> {
                               // errorText: 'Error Text',
                             ),
                             onSaved: (value) {
-                              _user.address = value.toString();
+                              _address = value.toString();
                             },
                             validator: (value) {
                               if (value!.isEmpty) {
@@ -223,7 +232,7 @@ class _UserDetailsState extends State<UserDetails> {
                                     // errorText: 'Error Text',
                                   ),
                                   onSaved: (value) {
-                                    _user.city = value.toString();
+                                    _city = value.toString();
                                   },
                                   validator: (value) {
                                     if (value!.isEmpty) {
@@ -259,7 +268,7 @@ class _UserDetailsState extends State<UserDetails> {
                                     // errorText: 'Error Text',
                                   ),
                                   onSaved: (value) {
-                                    _user.postCode = value.toString();
+                                    _postCode = value.toString();
                                   },
                                   validator: (value) {
                                     if (value!.isEmpty) {
@@ -295,7 +304,7 @@ class _UserDetailsState extends State<UserDetails> {
                               // errorText: 'Error Text',
                             ),
                             onSaved: (value) {
-                              _user.nif = double.parse(value.toString());
+                              _nif = double.parse(value.toString());
                             },
                             validator: (value) {
                               if (value!.isEmpty) {

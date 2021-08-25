@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "951659670595",
+    "firebase_url": "https://corkpadel-arena-eb47b-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "corkpadel-arena-eb47b",
+    "storage_bucket": "corkpadel-arena-eb47b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:951659670595:android:2cc7b0802e9fd763adb8f6",
+        "android_client_info": {
+          "package_name": "com.example.cork_padel"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "951659670595-qbiam2uifce45sscfld3jksnogr5io08.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.cork_padel",
+            "certificate_hash": "6639e2ed6ec00b072dbf7cfb7db258586726f740"
+          }
+        },
+        {
+          "client_id": "951659670595-ck2k5d51mpm958s2nvsmpr6urp923074.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBxl9RU-wcEOC6FOtYo2BqlYekWfUUPTw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "951659670595-ck2k5d51mpm958s2nvsmpr6urp923074.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "951659670595-khu23sqnnjdni1so2mb7549vinujfjsp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.corkPadel"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

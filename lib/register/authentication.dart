@@ -2,7 +2,7 @@ import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:cork_padel/main.dart';
 import 'package:cork_padel/register/user_details.dart';
 import 'package:flutter/material.dart';
-import './src/widgets.dart';
+import '../src/widgets.dart';
 import 'package:flutter/services.dart';
 
 enum ApplicationLoginState {
@@ -20,23 +20,10 @@ class Authentication extends StatelessWidget {
     required this.startLoginFlow,
     required this.verifyEmail,
     required this.signInWithEmailAndPassword,
-    required this.signInWithGoogle,
-    required this.signInWithFacebook,
     required this.cancelRegistration,
     required this.registerAccount,
     required this.signOut,
   });
-
-  // const Authentication.fromAuthentication(Authentication another){
-  //     this.loginState = another.loginState;
-  //    this.email,
-  //    this.startLoginFlow,
-  //    this.verifyEmail,
-  //    this.signInWithEmailAndPassword,
-  //    this.cancelRegistration,
-  //    this.registerAccount,
-  //    this.signOut,
-  // }
 
   final ApplicationLoginState loginState;
   final String? email;
@@ -45,8 +32,6 @@ class Authentication extends StatelessWidget {
     String email,
     void Function(Exception e) error,
   ) verifyEmail;
-  final void Function() signInWithFacebook;
-  final void Function() signInWithGoogle;
   final void Function(
     String email,
     String password,
@@ -101,8 +86,6 @@ class Authentication extends StatelessWidget {
         return EmailForm(
           callback: (email) => verifyEmail(
               email, (e) => _showErrorDialog(context, 'Invalid email', e)),
-          google: () => signInWithGoogle,
-          facebook: () => signInWithFacebook,
         );
       case ApplicationLoginState.password:
         return PasswordForm(
@@ -197,12 +180,9 @@ class Authentication extends StatelessWidget {
 }
 
 class EmailForm extends StatefulWidget {
-  const EmailForm(
-      {required this.callback, required this.google, required this.facebook});
+  const EmailForm({required this.callback});
 
   final void Function(String email) callback;
-  final void Function() google;
-  final void Function() facebook;
   @override
   _EmailFormState createState() => _EmailFormState();
 }
@@ -269,16 +249,7 @@ class _EmailFormState extends State<EmailForm> {
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              'ou',
-              style: TextStyle(
-                color: Theme.of(context).primaryColor,
-                fontSize: 25,
-              ),
-            ),
-          ),
+
           // Padding(
           //   padding: const EdgeInsets.all(8.0),
           //   child: SignInButton(
@@ -289,16 +260,16 @@ class _EmailFormState extends State<EmailForm> {
           //     },
           //   ),
           // ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SignInButton(
-              Buttons.Google,
-              text: "Entrar com Google",
-              onPressed: () {
-                widget.google();
-              },
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.all(8.0),
+          //   child: SignInButton(
+          //     Buttons.Google,
+          //     text: "Entrar com Google",
+          //     onPressed: () {
+          //       widget.google();
+          //     },
+          //   ),
+          // ),
         ],
       ),
     );
