@@ -1,11 +1,8 @@
+import 'package:cork_padel/main.dart';
+import 'package:cork_padel/register/user_details.dart';
 import 'package:flutter/material.dart';
 import './src/widgets.dart';
 import 'package:flutter/services.dart';
-import 'authentication.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'register/register_screen.dart';
-import 'package:flutter/gestures.dart';
-import './src/widgets.dart';
 
 enum ApplicationLoginState {
   loggedOut,
@@ -27,6 +24,17 @@ class Authentication extends StatelessWidget {
     required this.signOut,
   });
 
+  // const Authentication.fromAuthentication(Authentication another){
+  //     this.loginState = another.loginState;
+  //    this.email,
+  //    this.startLoginFlow,
+  //    this.verifyEmail,
+  //    this.signInWithEmailAndPassword,
+  //    this.cancelRegistration,
+  //    this.registerAccount,
+  //    this.signOut,
+  // }
+
   final ApplicationLoginState loginState;
   final String? email;
   final void Function() startLoginFlow;
@@ -42,29 +50,45 @@ class Authentication extends StatelessWidget {
   final void Function() cancelRegistration;
   final void Function(
     String email,
-    String displayName,
     String password,
     void Function(Exception e) error,
   ) registerAccount;
   final void Function() signOut;
-  //final _form = GlobalKey<FormState>();
-
-  //var _loggedUser = LoggedUser(email: '', password: '');
-
-  // void _savedForm() {
-  //   final isValid = _form.currentState!.validate();
-  //   if (!isValid) {
-  //     return;
-  //   }
-  //   _form.currentState!.save();
-  // }
 
   @override
   Widget build(BuildContext context) {
     switch (loginState) {
       case ApplicationLoginState.loggedOut:
-        startLoginFlow();
-        break;
+        return Column(
+          children: [
+            Text(
+              'Cork Padel Arena',
+              style: TextStyle(
+                fontFamily: 'Roboto Condensed',
+                fontSize: 26,
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+            Container(
+              width: 150,
+              padding: const EdgeInsets.all(10),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Theme.of(context).primaryColor,
+                  onPrimary: Colors.white,
+                ),
+                child: const Text(
+                  "Comecar",
+                  style: TextStyle(fontSize: 15),
+                ),
+                onPressed: () {
+                  startLoginFlow();
+                },
+              ),
+            )
+          ],
+        );
+
       case ApplicationLoginState.emailAddress:
         return EmailForm(
             callback: (email) => verifyEmail(
@@ -79,22 +103,43 @@ class Authentication extends StatelessWidget {
         );
       case ApplicationLoginState.register:
         return RegisterForm(
+          restartLogin: startLoginFlow,
           email: email!,
           cancel: () {
             cancelRegistration();
           },
           registerAccount: (
             email,
-            displayName,
             password,
           ) {
             registerAccount(
-                email,
-                displayName,
-                password,
-                (e) =>
-                    _showErrorDialog(context, 'Failed to create account', e));
+              email,
+              password,
+              (e) => _showErrorDialog(context, 'Failed to create account', e),
+            );
           },
+        );
+      case ApplicationLoginState.loggedIn:
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Theme.of(context).primaryColor,
+                  onPrimary: Colors.white,
+                ),
+                child: const Text(
+                  "Logout",
+                  style: TextStyle(fontSize: 15),
+                ),
+                onPressed: () {
+                  startLoginFlow();
+                },
+              ),
+            ),
+          ],
         );
       default:
         return Row(
@@ -103,6 +148,41 @@ class Authentication extends StatelessWidget {
           ],
         );
     }
+  }
+
+  void _showErrorDialog(BuildContext context, String title, Exception e) {
+    showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            title,
+            style: const TextStyle(fontSize: 24),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                  '${(e as dynamic).message}',
+                  style: const TextStyle(fontSize: 18),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            StyledButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'OK',
+                style: TextStyle(color: Colors.deepPurple),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 
@@ -308,13 +388,14 @@ class _PasswordFormState extends State<PasswordForm> {
 
 class RegisterForm extends StatefulWidget {
   const RegisterForm({
+    required this.restartLogin,
     required this.registerAccount,
     required this.cancel,
     required this.email,
   });
+  final void Function() restartLogin;
   final String email;
-  final void Function(String email, String displayName, String password)
-      registerAccount;
+  final void Function(String email, String password) registerAccount;
   final void Function() cancel;
   @override
   _RegisterFormState createState() => _RegisterFormState();
@@ -323,8 +404,8 @@ class RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<RegisterForm> {
   final _formKey = GlobalKey<FormState>(debugLabel: '_RegisterFormState');
   final _emailController = TextEditingController();
-  final _displayNameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _passController = TextEditingController();
 
   @override
   void initState() {
@@ -335,40 +416,140 @@ class _RegisterFormState extends State<RegisterForm> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      
-    )}}
-
-void _showErrorDialog(BuildContext context, String title, Exception e) {
-  showDialog<void>(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text(
-          title,
-          style: const TextStyle(fontSize: 24),
-        ),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
-              Text(
-                '${(e as dynamic).message}',
-                style: const TextStyle(fontSize: 18),
-              ),
-            ],
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          'REGISTO',
+          style: TextStyle(
+            fontFamily: 'Roboto Condensed',
+            fontSize: 26,
+            color: Theme.of(context).primaryColor,
           ),
         ),
-        actions: <Widget>[
-          StyledButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text(
-              'OK',
-              style: TextStyle(color: Colors.deepPurple),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all(10),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Theme.of(context).primaryColor, width: 1.5),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Theme.of(context).primaryColor, width: 1.5),
+                      ),
+                      labelText: 'Email',
+                      // errorText: 'Error Text',
+                    ),
+                    controller: _emailController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Obrigatorio';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+//---------------------------------------//PASSWORD-------------------------------------------------------------
+                Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: TextFormField(
+                    textInputAction: TextInputAction.next,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all(10),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.lime, width: 1.5),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.lime, width: 1.5),
+                      ),
+                      labelText: 'Password',
+                      // errorText: 'Error Text',
+                    ),
+                    controller: _passController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Obrigatorio';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: TextFormField(
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all(10),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.lime, width: 1.5),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.lime, width: 1.5),
+                      ),
+                      labelText: 'Confirme a Password',
+                      // errorText: 'Error Text',
+                    ),
+                    controller: _passwordController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Obrigatorio';
+                      }
+                      if (value != _passController.text) {
+                        return 'Passwords nao coincidem';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                Container(
+                  width: 150,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Theme.of(context).primaryColor,
+                      onPrimary: Colors.white,
+                    ),
+                    child: Text(
+                      "Submeter",
+                      style: TextStyle(fontSize: 15),
+                    ),
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        widget.registerAccount(
+                          _emailController.text,
+                          _passwordController.text,
+                        );
+                        Navigator.of(
+                          context,
+                        ).push(MaterialPageRoute(builder: (_) {
+                          return UserDetails();
+                        }));
+                      }
+                    },
+                  ),
+                )
+              ],
             ),
           ),
-        ],
-      );
-    },
-  );
+        ),
+
+//---------------------------------------//CONFIRM PASSWORD-------------------------------------------------------------
+      ],
+    );
+  }
 }

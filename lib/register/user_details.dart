@@ -1,17 +1,8 @@
+import 'package:cork_padel/register/registerSplash.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import './register_button.dart';
 import '../models/user.dart';
 
-enum ApplicationLoginState {
-  loggedOut,
-  emailAddress,
-  register,
-  password,
-  loggedIn,
-}
-
-class RegisterScreen extends StatefulWidget {
+class UserDetails extends StatefulWidget {
   // final ApplicationLoginState loginState;
   // final String? email;
   // final void Function() startLoginFlow;
@@ -34,25 +25,23 @@ class RegisterScreen extends StatefulWidget {
   // final void Function() signOut;
 
   @override
-  _RegisterScreenState createState() => _RegisterScreenState();
+  _UserDetailsState createState() => _UserDetailsState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _UserDetailsState extends State<UserDetails> {
   final _form = GlobalKey<FormState>();
-  FirebaseAuth auth = FirebaseAuth.instance;
-
-  final TextEditingController _pass = TextEditingController();
 
   var _user = new Userr(
-      id: '',
-      name: '',
-      surname: '',
-      address: '',
-      city: '',
-      postCode: '',
-      nif: 0,
-      email: '',
-      password: '');
+    id: '',
+    role: 'utilisador',
+    name: '',
+    surname: '',
+    address: '',
+    city: '',
+    postCode: '',
+    nif: 0,
+    email: '',
+  );
 
   void _saveForm() {
     final isValid = _form.currentState!.validate();
@@ -73,12 +62,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
         body: Center(
           child: SingleChildScrollView(
             child: Container(
+              alignment: Alignment.topCenter,
               margin: EdgeInsets.all(20),
               width: double.infinity,
-              //height: 600,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                //mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   Image.asset(
                     'assets/images/logo.png',
@@ -86,7 +75,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     height: 100.0,
                   ),
                   Text(
-                    'REGISTO',
+                    'DADOS PESSOAIS',
                     style: TextStyle(
                       fontFamily: 'Roboto Condensed',
                       fontSize: 26,
@@ -321,103 +310,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             },
                           ),
                         ),
-//---------------------------------------//EMAIL-------------------------------------------------------------
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: TextFormField(
-                            keyboardType: TextInputType.emailAddress,
-                            textInputAction: TextInputAction.next,
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.all(10),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Theme.of(context).primaryColor,
-                                    width: 1.5),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Theme.of(context).primaryColor,
-                                    width: 1.5),
-                              ),
-                              labelText: 'Email',
-                              // errorText: 'Error Text',
+//---------------------------------------//BOTAO-------------------------------------------------------------
+                        Container(
+                          width: 150,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Theme.of(context).primaryColor,
+                              onPrimary: Colors.white,
                             ),
-                            onSaved: (value) {
-                              _user.email = value.toString();
-                            },
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Obrigatorio';
-                              }
-                              return null;
+                            child: Text(
+                              "Submeter",
+                              style: TextStyle(fontSize: 15),
+                            ),
+                            onPressed: () {
+                              _saveForm();
+                              Navigator.of(
+                                context,
+                              ).push(MaterialPageRoute(builder: (_) {
+                                return RegisterSplash();
+                              }));
                             },
                           ),
                         ),
-//---------------------------------------//PASSWORD-------------------------------------------------------------
-                        Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: TextFormField(
-                            textInputAction: TextInputAction.next,
-                            enableSuggestions: false,
-                            autocorrect: false,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.all(10),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Colors.lime, width: 1.5),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Colors.lime, width: 1.5),
-                              ),
-                              labelText: 'Password',
-                              // errorText: 'Error Text',
-                            ),
-                            onSaved: (value) {
-                              _user.password = value.toString();
-                            },
-                            controller: _pass,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Obrigatorio';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-//---------------------------------------//CONFIRM PASSWORD-------------------------------------------------------------
-                        Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: TextFormField(
-                            enableSuggestions: false,
-                            autocorrect: false,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.all(10),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Colors.lime, width: 1.5),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(color: Colors.lime, width: 1.5),
-                              ),
-                              labelText: 'Confirme a Password',
-                              // errorText: 'Error Text',
-                            ),
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Obrigatorio';
-                              }
-                              if (value != _pass.text) {
-                                return 'Passwords nao coincidem';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                        RegisterButton(_saveForm),
                       ],
                     ),
                   ),

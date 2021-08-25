@@ -69,58 +69,59 @@ class HomePage extends StatelessWidget {
                     signOut: appState.signOut,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'ou entrar com',
-                    style: TextStyle(
-                      color: Theme.of(context).primaryColor,
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SignInButton(
-                    Buttons.Facebook,
-                    onPressed: () {},
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SignInButton(
-                    Buttons.Google,
-                    text: "Sign up with Google",
-                    onPressed: () {},
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: RichText(
-                    text: TextSpan(children: [
-                      TextSpan(
-                        text: 'Ainda nao e cliente? Registe-se ',
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                      TextSpan(
-                          text: 'aqui',
-                          style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              // Navigator.of(
-                              //   context,
-                              // ).push(MaterialPageRoute(builder: (_) {
-                              //   return RegisterScreen();
-                              // }));
-                            }),
-                    ]),
-                  ),
-                ),
+
+                // Padding(
+                //   padding: const EdgeInsets.all(8.0),
+                //   child: Text(
+                //     'ou entrar com',
+                //     style: TextStyle(
+                //       color: Theme.of(context).primaryColor,
+                //       fontSize: 15,
+                //     ),
+                //   ),
+                // ),
+                // Padding(
+                //   padding: const EdgeInsets.all(8.0),
+                //   child: SignInButton(
+                //     Buttons.Facebook,
+                //     onPressed: () {},
+                //   ),
+                // ),
+                // Padding(
+                //   padding: const EdgeInsets.all(8.0),
+                //   child: SignInButton(
+                //     Buttons.Google,
+                //     text: "Sign up with Google",
+                //     onPressed: () {},
+                //   ),
+                // ),
+                // Padding(
+                //   padding: const EdgeInsets.all(8.0),
+                //   child: RichText(
+                //     text: TextSpan(children: [
+                //       TextSpan(
+                //         text: 'Ainda nao e cliente? Registe-se ',
+                //         style: TextStyle(
+                //           color: Theme.of(context).primaryColor,
+                //         ),
+                //       ),
+                //       TextSpan(
+                //           text: 'aqui',
+                //           style: TextStyle(
+                //             color: Theme.of(context).primaryColor,
+                //             fontWeight: FontWeight.bold,
+                //           ),
+                //           recognizer: TapGestureRecognizer()
+                //             ..onTap = () {
+                //               // Navigator.of(
+                //               //   context,
+                //               // ).push(MaterialPageRoute(builder: (_) {
+                //               //   return RegisterScreen();
+                //               // }));
+                //             }),
+                //     ]),
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -198,12 +199,11 @@ class ApplicationState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void registerAccount(String email, String displayName, String password,
+  void registerAccount(String email, String password,
       void Function(FirebaseAuthException e) errorCallback) async {
     try {
       var credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
-      await credential.user!.updateProfile(displayName: displayName);
     } on FirebaseAuthException catch (e) {
       errorCallback(e);
     }
