@@ -47,6 +47,11 @@ class _RegisterSplashState extends State<RegisterSplash> {
                     color: Theme.of(context).primaryColor,
                   ),
                 ),
+                Image.asset(
+                  'assets/images/check.png',
+                  width: 80.0,
+                  height: 100.0,
+                ),
               ],
             ),
           ),

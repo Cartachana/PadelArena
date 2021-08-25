@@ -25,6 +25,8 @@ dependencies:
   http: ^0.13.3
   flutter:
     sdk: flutter
+  google_sign_in: "^4.5.1"
+  flutter_facebook_auth: "^3.5.0"
   firebase_core: ^1.5.0
   cloud_firestore: ^1.0.0 # new
   firebase_auth: ^1.0.0   # new

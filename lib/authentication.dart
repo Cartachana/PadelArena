@@ -1,3 +1,4 @@
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:cork_padel/main.dart';
 import 'package:cork_padel/register/user_details.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,8 @@ class Authentication extends StatelessWidget {
     required this.startLoginFlow,
     required this.verifyEmail,
     required this.signInWithEmailAndPassword,
+    required this.signInWithGoogle,
+    required this.signInWithFacebook,
     required this.cancelRegistration,
     required this.registerAccount,
     required this.signOut,
@@ -42,6 +45,8 @@ class Authentication extends StatelessWidget {
     String email,
     void Function(Exception e) error,
   ) verifyEmail;
+  final void Function() signInWithFacebook;
+  final void Function() signInWithGoogle;
   final void Function(
     String email,
     String password,
@@ -61,17 +66,20 @@ class Authentication extends StatelessWidget {
       case ApplicationLoginState.loggedOut:
         return Column(
           children: [
-            Text(
-              'Cork Padel Arena',
-              style: TextStyle(
-                fontFamily: 'Roboto Condensed',
-                fontSize: 26,
-                color: Theme.of(context).primaryColor,
+            Padding(
+              padding: const EdgeInsets.all(25.0),
+              child: Text(
+                'Cork Padel Arena',
+                style: TextStyle(
+                  fontFamily: 'Roboto Condensed',
+                  fontSize: 26,
+                  color: Theme.of(context).primaryColor,
+                ),
               ),
             ),
             Container(
               width: 150,
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.only(top: 25),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   primary: Theme.of(context).primaryColor,
@@ -91,8 +99,11 @@ class Authentication extends StatelessWidget {
 
       case ApplicationLoginState.emailAddress:
         return EmailForm(
-            callback: (email) => verifyEmail(
-                email, (e) => _showErrorDialog(context, 'Invalid email', e)));
+          callback: (email) => verifyEmail(
+              email, (e) => _showErrorDialog(context, 'Invalid email', e)),
+          google: () => signInWithGoogle,
+          facebook: () => signInWithFacebook,
+        );
       case ApplicationLoginState.password:
         return PasswordForm(
           email: email!,
@@ -103,7 +114,6 @@ class Authentication extends StatelessWidget {
         );
       case ApplicationLoginState.register:
         return RegisterForm(
-          restartLogin: startLoginFlow,
           email: email!,
           cancel: () {
             cancelRegistration();
@@ -187,8 +197,12 @@ class Authentication extends StatelessWidget {
 }
 
 class EmailForm extends StatefulWidget {
-  const EmailForm({required this.callback});
+  const EmailForm(
+      {required this.callback, required this.google, required this.facebook});
+
   final void Function(String email) callback;
+  final void Function() google;
+  final void Function() facebook;
   @override
   _EmailFormState createState() => _EmailFormState();
 }
@@ -254,7 +268,37 @@ class _EmailFormState extends State<EmailForm> {
                 }
               },
             ),
-          )
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'ou',
+              style: TextStyle(
+                color: Theme.of(context).primaryColor,
+                fontSize: 25,
+              ),
+            ),
+          ),
+          // Padding(
+          //   padding: const EdgeInsets.all(8.0),
+          //   child: SignInButton(
+          //     Buttons.Facebook,
+          //     text: "Entrar com Facebook",
+          //     onPressed: () {
+          //       widget.facebook();
+          //     },
+          //   ),
+          // ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SignInButton(
+              Buttons.Google,
+              text: "Entrar com Google",
+              onPressed: () {
+                widget.google();
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -376,7 +420,7 @@ class _PasswordFormState extends State<PasswordForm> {
                       },
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),
@@ -388,12 +432,11 @@ class _PasswordFormState extends State<PasswordForm> {
 
 class RegisterForm extends StatefulWidget {
   const RegisterForm({
-    required this.restartLogin,
     required this.registerAccount,
     required this.cancel,
     required this.email,
   });
-  final void Function() restartLogin;
+
   final String email;
   final void Function(String email, String password) registerAccount;
   final void Function() cancel;
@@ -418,6 +461,18 @@ class _RegisterFormState extends State<RegisterForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            'Email nao reconhecido. Por favor Registe-se',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Roboto Condensed',
+              fontSize: 16,
+              color: Colors.red,
+            ),
+          ),
+        ),
         Text(
           'REGISTO',
           style: TextStyle(
@@ -547,8 +602,6 @@ class _RegisterFormState extends State<RegisterForm> {
             ),
           ),
         ),
-
-//---------------------------------------//CONFIRM PASSWORD-------------------------------------------------------------
       ],
     );
   }
