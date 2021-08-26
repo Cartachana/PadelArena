@@ -25,13 +25,12 @@ dependencies:
   http: ^0.13.3
   flutter:
     sdk: flutter
-  google_sign_in: "^4.5.1"
+  provider: ^6.0.0
   flutter_facebook_auth: "^3.5.0"
   firebase_core: ^1.5.0
-  cloud_firestore: ^1.0.0 # new
-  firebase_auth: ^1.0.0   # new
+  cloud_firestore: ^2.5.0 # new
+  firebase_auth: ^3.0.2   # new
   google_fonts: ^2.0.0
-  provider: ^5.0.0     
   firebase_core_platform_interface: ^4.0.0   # new
   location: ^4.2.0
   splashscreen:

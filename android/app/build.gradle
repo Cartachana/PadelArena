@@ -23,6 +23,7 @@ if (flutterVersionName == null) {
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.google.gms.google-services'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
@@ -34,7 +35,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "SW4H83PDQ7.cork_padel"
+        applicationId "com.example.cork_padel"
         minSdkVersion 16
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
@@ -58,4 +59,16 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:multidex:1.0.3'
+    // Import the Firebase BoM
+  implementation platform('com.google.firebase:firebase-bom:28.3.1')
+
+  // When using the BoM, you don't specify versions in Firebase library dependencies
+
+  // Declare the dependency for the Firebase SDK for Google Analytics
+  implementation 'com.google.firebase:firebase-analytics'
+
+  // Declare the dependencies for any other desired Firebase products
+  // For example, declare the dependencies for Firebase Authentication and Cloud Firestore
+  implementation 'com.google.firebase:firebase-auth'
+  implementation 'com.google.firebase:firebase-firestore'
 }
