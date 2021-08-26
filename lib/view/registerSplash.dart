@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../dash.dart';
+import './dash.dart';
 
 class RegisterSplash extends StatefulWidget {
   @override

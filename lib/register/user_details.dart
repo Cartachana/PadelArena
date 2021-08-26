@@ -1,46 +1,59 @@
-import 'package:cork_padel/register/registerSplash.dart';
+import 'package:cork_padel/view/registerSplash.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user.dart';
 
 class UserDetails extends StatefulWidget {
-  @override
-  _UserDetailsState createState() => _UserDetailsState();
-}
-
-class _UserDetailsState extends State<UserDetails> {
-  final _form = GlobalKey<FormState>();
   String _id = '';
-  String _role = 'utilisador';
+  String _role = 'utilizador';
   String _name = '';
   String _surname = '';
   String _address = '';
   String _city = '';
   String _postCode = '';
-  num _nif = 0;
+  String _nif = '';
   String _email = '';
 
-  final FirebaseAuth auth = FirebaseAuth.instance;
+  @override
+  _UserDetailsState createState() => _UserDetailsState();
+}
 
-  void inputData() {
-    final User user = auth.currentUser!;
-    _email = auth.currentUser!.email.toString();
-    _id = user.uid;
-
-    // here you write the codes to input the data into firestore
-  }
-
-  void _saveForm() {
+class _UserDetailsState extends State<UserDetails> {
+  Userr _userr = Userr();
+  void _saveForm() async {
     final isValid = _form.currentState!.validate();
     if (!isValid) {
       return;
     }
     _form.currentState!.save();
-    AddUser(
-        _id, _role, _name, _surname, _address, _city, _postCode, _nif, _email);
+    final AddUser newUser = AddUser(
+        _userr.id,
+        widget._role,
+        widget._name,
+        widget._surname,
+        widget._address,
+        widget._city,
+        widget._postCode,
+        widget._nif,
+        _userr.email);
+
+    _userr.role = widget._role;
+    _userr.name = widget._name;
+    _userr.surname = widget._surname;
+    _userr.address = widget._address;
+    _userr.city = widget._city;
+    _userr.postCode = widget._postCode;
+    _userr.nif = widget._nif;
+
+    await newUser.addUser();
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) {
+      return RegisterSplash();
+    }));
   }
 
+  final _form = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,7 +118,7 @@ class _UserDetailsState extends State<UserDetails> {
                                         // errorText: 'Error Text',
                                       ),
                                       onSaved: (value) {
-                                        _name = value.toString();
+                                        widget._name = value.toString();
                                       },
                                       validator: (value) {
                                         if (value!.isEmpty) {
@@ -143,7 +156,7 @@ class _UserDetailsState extends State<UserDetails> {
                                         // errorText: 'Error Text',
                                       ),
                                       onSaved: (value) {
-                                        _surname = value.toString();
+                                        widget._surname = value.toString();
                                       },
                                       validator: (value) {
                                         if (value!.isEmpty) {
@@ -177,7 +190,7 @@ class _UserDetailsState extends State<UserDetails> {
                               // errorText: 'Error Text',
                             ),
                             onSaved: (value) {
-                              _address = value.toString();
+                              widget._address = value.toString();
                             },
                             validator: (value) {
                               if (value!.isEmpty) {
@@ -213,7 +226,7 @@ class _UserDetailsState extends State<UserDetails> {
                                     // errorText: 'Error Text',
                                   ),
                                   onSaved: (value) {
-                                    _city = value.toString();
+                                    widget._city = value.toString();
                                   },
                                   validator: (value) {
                                     if (value!.isEmpty) {
@@ -249,7 +262,7 @@ class _UserDetailsState extends State<UserDetails> {
                                     // errorText: 'Error Text',
                                   ),
                                   onSaved: (value) {
-                                    _postCode = value.toString();
+                                    widget._postCode = value.toString();
                                   },
                                   validator: (value) {
                                     if (value!.isEmpty) {
@@ -285,7 +298,7 @@ class _UserDetailsState extends State<UserDetails> {
                               // errorText: 'Error Text',
                             ),
                             onSaved: (value) {
-                              _nif = double.parse(value.toString());
+                              widget._nif = value.toString();
                             },
                             validator: (value) {
                               if (value!.isEmpty) {
@@ -314,11 +327,6 @@ class _UserDetailsState extends State<UserDetails> {
                             ),
                             onPressed: () {
                               _saveForm();
-                              Navigator.of(
-                                context,
-                              ).push(MaterialPageRoute(builder: (_) {
-                                return RegisterSplash();
-                              }));
                             },
                           ),
                         ),
@@ -341,7 +349,7 @@ class AddUser {
   final String _address;
   final String _city;
   final String _postCode;
-  final num _nif;
+  final String _nif;
   final String _email;
 
   AddUser(this._id, this._role, this._name, this._surname, this._address,
@@ -353,6 +361,8 @@ class AddUser {
     // Call the user's CollectionReference to add a new user
     return users
         .add({
+          'id': _id,
+          'role': _role,
           'adress': _address,
           'city': _city,
           'email': _email,

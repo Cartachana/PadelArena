@@ -1,3 +1,4 @@
+import '../models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -64,6 +65,7 @@ class HomePage extends StatelessWidget {
                     cancelRegistration: appState.cancelRegistration,
                     registerAccount: appState.registerAccount,
                     signOut: appState.signOut,
+                    getDetails: appState.getUserDetails,
                   ),
                 ),
               ],
@@ -76,6 +78,7 @@ class HomePage extends StatelessWidget {
 }
 
 class ApplicationState extends ChangeNotifier {
+  Userr _userr = Userr();
   ApplicationState() {
     init();
   }
@@ -138,6 +141,12 @@ class ApplicationState extends ChangeNotifier {
     }
   }
 
+  void getUserDetails() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    _userr.id = user!.uid.toString();
+    _userr.email = user.email.toString();
+  }
+
   void cancelRegistration() {
     _loginState = ApplicationLoginState.emailAddress;
     notifyListeners();
@@ -148,6 +157,9 @@ class ApplicationState extends ChangeNotifier {
     try {
       var credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
+      final User? user = credential.user;
+      _userr.id = user!.uid.toString();
+      _userr.email = user.email.toString();
     } on FirebaseAuthException catch (e) {
       errorCallback(e);
     }

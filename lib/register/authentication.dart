@@ -1,5 +1,6 @@
 import 'package:cork_padel/register/user_details.dart';
 import 'package:flutter/material.dart';
+import '../view/dash.dart';
 import '../src/widgets.dart';
 import 'package:flutter/services.dart';
 
@@ -12,16 +13,16 @@ enum ApplicationLoginState {
 }
 
 class Authentication extends StatelessWidget {
-  const Authentication({
-    required this.loginState,
-    required this.email,
-    required this.startLoginFlow,
-    required this.verifyEmail,
-    required this.signInWithEmailAndPassword,
-    required this.cancelRegistration,
-    required this.registerAccount,
-    required this.signOut,
-  });
+  const Authentication(
+      {required this.loginState,
+      required this.email,
+      required this.startLoginFlow,
+      required this.verifyEmail,
+      required this.signInWithEmailAndPassword,
+      required this.cancelRegistration,
+      required this.registerAccount,
+      required this.signOut,
+      required this.getDetails});
 
   final ApplicationLoginState loginState;
   final String? email;
@@ -42,6 +43,7 @@ class Authentication extends StatelessWidget {
     void Function(Exception e) error,
   ) registerAccount;
   final void Function() signOut;
+  final void Function() getDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -92,6 +94,7 @@ class Authentication extends StatelessWidget {
             signInWithEmailAndPassword(email, password,
                 (e) => _showErrorDialog(context, 'Failed to sign in', e));
           },
+          getDetails: getDetails,
         );
       case ApplicationLoginState.register:
         return RegisterForm(
@@ -109,6 +112,7 @@ class Authentication extends StatelessWidget {
               (e) => _showErrorDialog(context, 'Failed to create account', e),
             );
           },
+          getDetails: getDetails,
         );
       case ApplicationLoginState.loggedIn:
         return Row(
@@ -275,14 +279,13 @@ class _EmailFormState extends State<EmailForm> {
 }
 
 class PasswordForm extends StatefulWidget {
-  const PasswordForm({
-    required this.login,
-    required this.email,
-  });
+  const PasswordForm(
+      {required this.login, required this.email, required this.getDetails});
   final String email;
   final void Function(String email, String password) login;
   @override
   _PasswordFormState createState() => _PasswordFormState();
+  final void Function() getDetails;
 }
 
 class _PasswordFormState extends State<PasswordForm> {
@@ -385,6 +388,11 @@ class _PasswordFormState extends State<PasswordForm> {
                             _emailController.text,
                             _passwordController.text,
                           );
+                          Navigator.of(
+                            context,
+                          ).push(MaterialPageRoute(builder: (_) {
+                            return Dash();
+                          }));
                         }
                       },
                     ),
@@ -400,15 +408,16 @@ class _PasswordFormState extends State<PasswordForm> {
 }
 
 class RegisterForm extends StatefulWidget {
-  const RegisterForm({
-    required this.registerAccount,
-    required this.cancel,
-    required this.email,
-  });
+  const RegisterForm(
+      {required this.registerAccount,
+      required this.cancel,
+      required this.email,
+      required this.getDetails});
 
   final String email;
   final void Function(String email, String password) registerAccount;
   final void Function() cancel;
+  final void Function() getDetails;
   @override
   _RegisterFormState createState() => _RegisterFormState();
 }
@@ -558,6 +567,7 @@ class _RegisterFormState extends State<RegisterForm> {
                           _emailController.text,
                           _passwordController.text,
                         );
+                        widget.getDetails;
                         Navigator.of(
                           context,
                         ).push(MaterialPageRoute(builder: (_) {
