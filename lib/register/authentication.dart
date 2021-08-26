@@ -1,5 +1,3 @@
-import 'package:flutter_signin_button/flutter_signin_button.dart';
-import 'package:cork_padel/main.dart';
 import 'package:cork_padel/register/user_details.dart';
 import 'package:flutter/material.dart';
 import '../src/widgets.dart';
