@@ -143,6 +143,7 @@ class ApplicationState extends ChangeNotifier {
 
   void getUserDetails() async {
     final User? user = FirebaseAuth.instance.currentUser;
+
     _userr.id = user!.uid.toString();
     _userr.email = user.email.toString();
   }

@@ -20,22 +20,13 @@ class UserDetails extends StatefulWidget {
 
 class _UserDetailsState extends State<UserDetails> {
   Userr _userr = Userr();
+
   void _saveForm() async {
     final isValid = _form.currentState!.validate();
     if (!isValid) {
       return;
     }
     _form.currentState!.save();
-    final AddUser newUser = AddUser(
-        _userr.id,
-        widget._role,
-        widget._name,
-        widget._surname,
-        widget._address,
-        widget._city,
-        widget._postCode,
-        widget._nif,
-        _userr.email);
 
     _userr.role = widget._role;
     _userr.name = widget._name;
@@ -45,7 +36,20 @@ class _UserDetailsState extends State<UserDetails> {
     _userr.postCode = widget._postCode;
     _userr.nif = widget._nif;
 
-    await newUser.addUser();
+    AddUser(
+            widget._id,
+            widget._role,
+            widget._name,
+            widget._surname,
+            widget._address,
+            widget._city,
+            widget._postCode,
+            widget._nif,
+            widget._email)
+        .addUser();
+
+    //await newUser.addUser();
+
     Navigator.of(
       context,
     ).push(MaterialPageRoute(builder: (_) {
@@ -342,6 +346,7 @@ class _UserDetailsState extends State<UserDetails> {
 }
 
 class AddUser {
+  Userr _userr = Userr();
   final String _id;
   final String _role;
   final String _name;
@@ -360,7 +365,8 @@ class AddUser {
   Future<void> addUser() {
     // Call the user's CollectionReference to add a new user
     return users
-        .add({
+        .doc(_email)
+        .set({
           'id': _id,
           'role': _role,
           'adress': _address,

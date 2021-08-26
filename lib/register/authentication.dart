@@ -388,6 +388,7 @@ class _PasswordFormState extends State<PasswordForm> {
                             _emailController.text,
                             _passwordController.text,
                           );
+
                           Navigator.of(
                             context,
                           ).push(MaterialPageRoute(builder: (_) {
@@ -567,7 +568,7 @@ class _RegisterFormState extends State<RegisterForm> {
                           _emailController.text,
                           _passwordController.text,
                         );
-                        widget.getDetails;
+                        widget.getDetails();
                         Navigator.of(
                           context,
                         ).push(MaterialPageRoute(builder: (_) {

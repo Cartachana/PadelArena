@@ -3,9 +3,26 @@ import 'package:flutter/material.dart';
 import '../main.dart';
 import '../../models/user.dart';
 import './reserve.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Dash extends StatelessWidget {
-  Userr _userr = Userr();
+  Userr _user0 = Userr();
+  String _name = '';
+
+  void currentUser() {
+    final String _email = _user0.email.toString();
+    var fireUser = FirebaseFirestore.instance
+        .collection('users')
+        .doc(_email)..get().;
+        fireUser.get().then((value) {
+        this._name = value.data()!.first_name.toString();
+    this._user0 = _userr;
+        });
+        
+        }
+
+    
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +48,7 @@ class Dash extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Ola ' + '${_userr.name}', ////////////////////
+                  'Ola ' + '${_user0.name}', ////////////////////
                   style: TextStyle(
                     fontFamily: 'Roboto Condensed',
                     fontSize: 26,
