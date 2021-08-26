@@ -1,29 +1,10 @@
 import 'package:cork_padel/register/registerSplash.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user.dart';
 
 class UserDetails extends StatefulWidget {
-  // final ApplicationLoginState loginState;
-  // final String? email;
-  // final void Function() startLoginFlow;
-  // final void Function(
-  //   String email,
-  //   void Function(Exception e) error,
-  // ) verifyEmail;
-  // final void Function(
-  //   String email,
-  //   String password,
-  //   void Function(Exception e) error,
-  // ) signInWithEmailAndPassword;
-  // final void Function() cancelRegistration;
-  // final void Function(
-  //   String email,
-  //   String displayName,
-  //   String password,
-  //   void Function(Exception e) error,
-  // ) registerAccount;
-  // final void Function() signOut;
-
   @override
   _UserDetailsState createState() => _UserDetailsState();
 }
@@ -40,17 +21,15 @@ class _UserDetailsState extends State<UserDetails> {
   num _nif = 0;
   String _email = '';
 
-  var _user = new Userr(
-    id: '',
-    role: 'utilisador',
-    name: '',
-    surname: '',
-    address: '',
-    city: '',
-    postCode: '',
-    nif: 0,
-    email: '',
-  );
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+  void inputData() {
+    final User user = auth.currentUser!;
+    _email = auth.currentUser!.email.toString();
+    _id = user.uid;
+
+    // here you write the codes to input the data into firestore
+  }
 
   void _saveForm() {
     final isValid = _form.currentState!.validate();
@@ -58,6 +37,8 @@ class _UserDetailsState extends State<UserDetails> {
       return;
     }
     _form.currentState!.save();
+    AddUser(
+        _id, _role, _name, _surname, _address, _city, _postCode, _nif, _email);
   }
 
   @override
@@ -349,5 +330,38 @@ class _UserDetailsState extends State<UserDetails> {
             ),
           ),
         ));
+  }
+}
+
+class AddUser {
+  final String _id;
+  final String _role;
+  final String _name;
+  final String _surname;
+  final String _address;
+  final String _city;
+  final String _postCode;
+  final num _nif;
+  final String _email;
+
+  AddUser(this._id, this._role, this._name, this._surname, this._address,
+      this._city, this._postCode, this._nif, this._email);
+
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+  Future<void> addUser() {
+    // Call the user's CollectionReference to add a new user
+    return users
+        .add({
+          'adress': _address,
+          'city': _city,
+          'email': _email,
+          'first_name': _name,
+          'last_name': _surname,
+          'nif': _nif,
+          'postal_code': _postCode
+        })
+        .then((value) => print("User Added"))
+        .catchError((error) => print("Failed to add user: $error"));
   }
 }
