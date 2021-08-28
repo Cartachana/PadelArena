@@ -3,26 +3,28 @@ import 'package:flutter/material.dart';
 import '../main.dart';
 import '../../models/user.dart';
 import './reserve.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+//import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Dash extends StatelessWidget {
-  Userr _user0 = Userr();
-  String _name = '';
+  Userr _userr = Userr();
 
-  void currentUser() {
-    final String _email = _user0.email.toString();
-    var fireUser = FirebaseFirestore.instance
-        .collection('users')
-        .doc(_email)..get().;
-        fireUser.get().then((value) {
-        this._name = value.data()!.first_name.toString();
-    this._user0 = _userr;
-        });
-        
-        }
-
-    
-  }
+  // void currentUser() {
+  //   final String _email = _userr.email.toString();
+  //   FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc(_email)
+  //       .get()
+  //       .then((value) {
+  //     _userr.name = value.data()!["first_name"].toString();
+  //     _userr.address = value.data()!["address"].toString();
+  //     _userr.surname = value.data()!["last_name"].toString();
+  //     _userr.city = value.data()!["city"].toString();
+  //     _userr.id = value.data()!["id"].toString();
+  //     _userr.nif = value.data()!["nif"].toString();
+  //     _userr.postCode = value.data()!["postal_code"].toString();
+  //     _userr.role = value.data()!["role"].toString();
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +50,7 @@ class Dash extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'Ola ' + '${_user0.name}', ////////////////////
+                  'Ola ' + '${_userr.name}', ////////////////////
                   style: TextStyle(
                     fontFamily: 'Roboto Condensed',
                     fontSize: 26,

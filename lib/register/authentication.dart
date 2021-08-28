@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../view/dash.dart';
 import '../src/widgets.dart';
 import 'package:flutter/services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../models/user.dart';
 
 enum ApplicationLoginState {
   loggedOut,
@@ -13,7 +15,26 @@ enum ApplicationLoginState {
 }
 
 class Authentication extends StatelessWidget {
-  const Authentication(
+  Userr _userr = Userr();
+  void currentUser() {
+    final String _email = _userr.email.toString();
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(_email)
+        .get()
+        .then((value) {
+      _userr.name = value.data()!["first_name"].toString();
+      _userr.address = value.data()!["address"].toString();
+      _userr.surname = value.data()!["last_name"].toString();
+      _userr.city = value.data()!["city"].toString();
+      _userr.id = value.data()!["id"].toString();
+      _userr.nif = value.data()!["nif"].toString();
+      _userr.postCode = value.data()!["postal_code"].toString();
+      _userr.role = value.data()!["role"].toString();
+    });
+  }
+
+  Authentication(
       {required this.loginState,
       required this.email,
       required this.startLoginFlow,
@@ -115,27 +136,11 @@ class Authentication extends StatelessWidget {
           getDetails: getDetails,
         );
       case ApplicationLoginState.loggedIn:
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: Theme.of(context).primaryColor,
-                  onPrimary: Colors.white,
-                ),
-                child: const Text(
-                  "Logout",
-                  style: TextStyle(fontSize: 15),
-                ),
-                onPressed: () {
-                  startLoginFlow();
-                },
-              ),
-            ),
-          ],
-        );
+        {
+          currentUser();
+          return Dash();
+        }
+
       default:
         return Row(
           children: const [

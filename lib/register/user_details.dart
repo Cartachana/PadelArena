@@ -4,16 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user.dart';
 
 class UserDetails extends StatefulWidget {
-  String _id = '';
-  String _role = 'utilizador';
-  String _name = '';
-  String _surname = '';
-  String _address = '';
-  String _city = '';
-  String _postCode = '';
-  String _nif = '';
-  String _email = '';
-
   @override
   _UserDetailsState createState() => _UserDetailsState();
 }
@@ -28,24 +18,8 @@ class _UserDetailsState extends State<UserDetails> {
     }
     _form.currentState!.save();
 
-    _userr.role = widget._role;
-    _userr.name = widget._name;
-    _userr.surname = widget._surname;
-    _userr.address = widget._address;
-    _userr.city = widget._city;
-    _userr.postCode = widget._postCode;
-    _userr.nif = widget._nif;
-
-    AddUser(
-            widget._id,
-            widget._role,
-            widget._name,
-            widget._surname,
-            widget._address,
-            widget._city,
-            widget._postCode,
-            widget._nif,
-            widget._email)
+    AddUser(_userr.id, _userr.role, _userr.name, _userr.surname, _userr.address,
+            _userr.city, _userr.postCode, _userr.nif, _userr.email)
         .addUser();
 
     //await newUser.addUser();
@@ -122,7 +96,7 @@ class _UserDetailsState extends State<UserDetails> {
                                         // errorText: 'Error Text',
                                       ),
                                       onSaved: (value) {
-                                        widget._name = value.toString();
+                                        _userr.name = value.toString();
                                       },
                                       validator: (value) {
                                         if (value!.isEmpty) {
@@ -160,7 +134,7 @@ class _UserDetailsState extends State<UserDetails> {
                                         // errorText: 'Error Text',
                                       ),
                                       onSaved: (value) {
-                                        widget._surname = value.toString();
+                                        _userr.surname = value.toString();
                                       },
                                       validator: (value) {
                                         if (value!.isEmpty) {
@@ -194,7 +168,7 @@ class _UserDetailsState extends State<UserDetails> {
                               // errorText: 'Error Text',
                             ),
                             onSaved: (value) {
-                              widget._address = value.toString();
+                              _userr.address = value.toString();
                             },
                             validator: (value) {
                               if (value!.isEmpty) {
@@ -230,7 +204,7 @@ class _UserDetailsState extends State<UserDetails> {
                                     // errorText: 'Error Text',
                                   ),
                                   onSaved: (value) {
-                                    widget._city = value.toString();
+                                    _userr.city = value.toString();
                                   },
                                   validator: (value) {
                                     if (value!.isEmpty) {
@@ -266,7 +240,7 @@ class _UserDetailsState extends State<UserDetails> {
                                     // errorText: 'Error Text',
                                   ),
                                   onSaved: (value) {
-                                    widget._postCode = value.toString();
+                                    _userr.postCode = value.toString();
                                   },
                                   validator: (value) {
                                     if (value!.isEmpty) {
@@ -302,7 +276,7 @@ class _UserDetailsState extends State<UserDetails> {
                               // errorText: 'Error Text',
                             ),
                             onSaved: (value) {
-                              widget._nif = value.toString();
+                              _userr.nif = value.toString();
                             },
                             validator: (value) {
                               if (value!.isEmpty) {
@@ -346,7 +320,6 @@ class _UserDetailsState extends State<UserDetails> {
 }
 
 class AddUser {
-  Userr _userr = Userr();
   final String _id;
   final String _role;
   final String _name;
@@ -363,13 +336,13 @@ class AddUser {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
 
   Future<void> addUser() {
-    // Call the user's CollectionReference to add a new user
+    //Call the user's CollectionReference to add a new user
     return users
         .doc(_email)
         .set({
           'id': _id,
           'role': _role,
-          'adress': _address,
+          'address': _address,
           'city': _city,
           'email': _email,
           'first_name': _name,
