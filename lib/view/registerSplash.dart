@@ -1,3 +1,4 @@
+import 'package:cork_padel/main.dart';
 import 'package:flutter/material.dart';
 import './dash.dart';
 
@@ -16,7 +17,7 @@ class _RegisterSplashState extends State<RegisterSplash> {
   _goToDash() async {
     await Future.delayed(Duration(milliseconds: 2000), () {});
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => Dash()));
+        context, MaterialPageRoute(builder: (context) => MyApp()));
   }
 
   @override

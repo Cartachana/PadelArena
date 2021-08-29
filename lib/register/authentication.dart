@@ -1,4 +1,7 @@
+import 'dart:async';
+import 'package:cork_padel/main.dart';
 import 'package:cork_padel/register/user_details.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../view/dash.dart';
 import '../src/widgets.dart';
@@ -12,13 +15,16 @@ enum ApplicationLoginState {
   register,
   password,
   loggedIn,
+  emailNotVerified,
+  detailsNotEntered,
 }
 
 class Authentication extends StatelessWidget {
   Userr _userr = Userr();
-  void currentUser() {
+  Future<void> currentUser() {
+    getDetails();
     final String _email = _userr.email.toString();
-    FirebaseFirestore.instance
+    return FirebaseFirestore.instance
         .collection('users')
         .doc(_email)
         .get()
@@ -38,20 +44,24 @@ class Authentication extends StatelessWidget {
       {required this.loginState,
       required this.email,
       required this.startLoginFlow,
-      required this.verifyEmail,
+      required this.checkEmail,
       required this.signInWithEmailAndPassword,
       required this.cancelRegistration,
       required this.registerAccount,
       required this.signOut,
-      required this.getDetails});
+      required this.getDetails,
+      required this.checkEmailVerified,
+      required this.emailVerified});
 
   final ApplicationLoginState loginState;
   final String? email;
   final void Function() startLoginFlow;
+  final Future<void> checkEmailVerified;
+  final bool emailVerified;
   final void Function(
     String email,
     void Function(Exception e) error,
-  ) verifyEmail;
+  ) checkEmail;
   final void Function(
     String email,
     String password,
@@ -60,6 +70,7 @@ class Authentication extends StatelessWidget {
   final void Function() cancelRegistration;
   final void Function(
     String email,
+    String displayName,
     String password,
     void Function(Exception e) error,
   ) registerAccount;
@@ -105,15 +116,15 @@ class Authentication extends StatelessWidget {
 
       case ApplicationLoginState.emailAddress:
         return EmailForm(
-          callback: (email) => verifyEmail(
-              email, (e) => _showErrorDialog(context, 'Invalid email', e)),
+          callback: (email) => checkEmail(
+              email, (e) => _showErrorDialog(context, 'Email invalido', e)),
         );
       case ApplicationLoginState.password:
         return PasswordForm(
           email: email!,
           login: (email, password) {
             signInWithEmailAndPassword(email, password,
-                (e) => _showErrorDialog(context, 'Failed to sign in', e));
+                (e) => _showErrorDialog(context, 'Erro no login', e));
           },
           getDetails: getDetails,
         );
@@ -125,22 +136,28 @@ class Authentication extends StatelessWidget {
           },
           registerAccount: (
             email,
+            displayName,
             password,
           ) {
             registerAccount(
               email,
+              displayName,
               password,
               (e) => _showErrorDialog(context, 'Failed to create account', e),
             );
           },
           getDetails: getDetails,
         );
+      case ApplicationLoginState.detailsNotEntered:
+        currentUser();
+        return UserDetailsWidget();
+      case ApplicationLoginState.emailNotVerified:
+        return Verify(checkEmailVerified, emailVerified);
       case ApplicationLoginState.loggedIn:
         {
           currentUser();
-          return Dash();
+          return DashWidget();
         }
-
       default:
         return Row(
           children: const [
@@ -309,7 +326,7 @@ class _PasswordFormState extends State<PasswordForm> {
     return Column(
       children: [
         const Text(
-          'Sign in',
+          'Entrar',
           style: TextStyle(
             fontFamily: 'Roboto Condensed',
             fontSize: 26,
@@ -393,12 +410,6 @@ class _PasswordFormState extends State<PasswordForm> {
                             _emailController.text,
                             _passwordController.text,
                           );
-
-                          Navigator.of(
-                            context,
-                          ).push(MaterialPageRoute(builder: (_) {
-                            return Dash();
-                          }));
                         }
                       },
                     ),
@@ -421,7 +432,8 @@ class RegisterForm extends StatefulWidget {
       required this.getDetails});
 
   final String email;
-  final void Function(String email, String password) registerAccount;
+  final void Function(String email, String displayName, String password)
+      registerAccount;
   final void Function() cancel;
   final void Function() getDetails;
   @override
@@ -431,6 +443,7 @@ class RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<RegisterForm> {
   final _formKey = GlobalKey<FormState>(debugLabel: '_RegisterFormState');
   final _emailController = TextEditingController();
+  final _displayNameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _passController = TextEditingController();
 
@@ -472,6 +485,33 @@ class _RegisterFormState extends State<RegisterForm> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all(10),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Theme.of(context).primaryColor, width: 1.5),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Theme.of(context).primaryColor, width: 1.5),
+                      ),
+                      labelText: 'Nome',
+                      // errorText: 'Error Text',
+                    ),
+                    controller: _displayNameController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Obrigatorio';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
@@ -571,12 +611,12 @@ class _RegisterFormState extends State<RegisterForm> {
                       if (_formKey.currentState!.validate()) {
                         widget.registerAccount(
                           _emailController.text,
+                          _displayNameController.text,
                           _passwordController.text,
                         );
                         widget.getDetails();
-                        Navigator.of(
-                          context,
-                        ).push(MaterialPageRoute(builder: (_) {
+                        Navigator.of(context)
+                            .pushReplacement(MaterialPageRoute(builder: (_) {
                           return UserDetails();
                         }));
                       }
@@ -588,6 +628,79 @@ class _RegisterFormState extends State<RegisterForm> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class Verify extends StatefulWidget {
+  final Future<void> checkEmailVerified;
+  final bool emailVerified;
+
+  Verify(this.checkEmailVerified, this.emailVerified);
+
+  @override
+  _VerifyState createState() => _VerifyState();
+}
+
+class _VerifyState extends State<Verify> {
+  final User? _user = FirebaseAuth.instance.currentUser;
+  Timer? timer;
+  @override
+  void initState() {
+    timer = Timer.periodic(Duration(seconds: 5), (timer) {
+      if (_user!.emailVerified) {
+        timer.cancel();
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) {
+          return MyApp();
+        }));
+      } else {
+        widget.checkEmailVerified;
+      }
+    });
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    timer!.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Center(
+        child: Column(
+          children: [
+            Text(
+              'Um email foi enviado para ${_user!.email}. Por favor visite a sua caixa de email',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18),
+            ),
+            Text(
+              '\nNao recebeu o email de confirmacao?\n',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18),
+            ),
+            Container(
+              width: 150,
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Theme.of(context).primaryColor,
+                    onPrimary: Colors.white,
+                  ),
+                  child: Text(
+                    "Reenviar",
+                    style: TextStyle(fontSize: 15),
+                  ),
+                  onPressed: () {
+                    _user!.sendEmailVerification();
+                  }),
+            )
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -59,13 +61,15 @@ class HomePage extends StatelessWidget {
                     email: appState.email,
                     loginState: appState.loginState,
                     startLoginFlow: appState.startLoginFlow,
-                    verifyEmail: appState.verifyEmail,
+                    checkEmail: appState.checkEmail,
                     signInWithEmailAndPassword:
                         appState.signInWithEmailAndPassword,
                     cancelRegistration: appState.cancelRegistration,
                     registerAccount: appState.registerAccount,
                     signOut: appState.signOut,
                     getDetails: appState.getUserDetails,
+                    checkEmailVerified: appState.checkEmailVerified(),
+                    emailVerified: appState.emailVerified,
                   ),
                 ),
               ],
@@ -82,13 +86,35 @@ class ApplicationState extends ChangeNotifier {
   ApplicationState() {
     init();
   }
+  User? user;
+  Timer? timer;
+  bool? ok = false;
+
+  bool emailVerified = false;
 
   Future<void> init() async {
     await Firebase.initializeApp();
+    //final User? _user = FirebaseAuth.instance.currentUser;
 
     FirebaseAuth.instance.userChanges().listen((user) {
       if (user != null) {
-        _loginState = ApplicationLoginState.loggedIn;
+        if (user.emailVerified) {
+          emailVerified = true;
+          _loginState = ApplicationLoginState.loggedIn;
+        } else {
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.email.toString())
+              .get()
+              .then((onexist) {
+            onexist.exists ? ok = true : ok = false;
+          });
+          if (ok!) {
+            _loginState = ApplicationLoginState.emailNotVerified;
+          } else {
+            _loginState = ApplicationLoginState.detailsNotEntered;
+          }
+        }
       } else {
         _loginState = ApplicationLoginState.loggedOut;
       }
@@ -107,7 +133,7 @@ class ApplicationState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void verifyEmail(
+  void checkEmail(
     String email,
     void Function(FirebaseAuthException e) errorCallback,
   ) async {
@@ -153,16 +179,31 @@ class ApplicationState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void registerAccount(String email, String password,
+  void registerAccount(String email, String displayName, String password,
       void Function(FirebaseAuthException e) errorCallback) async {
     try {
       var credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
+      await credential.user!.updateDisplayName(displayName);
       final User? user = credential.user;
       _userr.id = user!.uid.toString();
       _userr.email = user.email.toString();
+
+      _loginState = ApplicationLoginState.detailsNotEntered;
     } on FirebaseAuthException catch (e) {
       errorCallback(e);
+    }
+  }
+
+  Future<void> checkEmailVerified() async {
+    final auth = FirebaseAuth.instance;
+    user = auth.currentUser;
+    await user!.reload();
+    if (user!.emailVerified) {
+      emailVerified = true;
+      _loginState = ApplicationLoginState.loggedIn;
+    } else {
+      emailVerified = false;
     }
   }
 
