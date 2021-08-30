@@ -63,7 +63,7 @@ class DashWidget extends StatelessWidget {
                   onPrimary: Colors.white,
                 ),
                 child: const Text(
-                  "Fazer Reserva",
+                  "Reservas",
                   style: TextStyle(fontSize: 15),
                 ),
                 onPressed: () {

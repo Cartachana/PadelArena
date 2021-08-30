@@ -303,11 +303,14 @@ class UserDetailsWidget extends StatelessWidget {
                     ),
                     onPressed: () {
                       _saveForm();
-                      Navigator.of(
-                        context,
-                      ).push(MaterialPageRoute(builder: (_) {
-                        return RegisterSplash();
-                      }));
+                      final isValid = _form.currentState!.validate();
+                      if (isValid) {
+                        Navigator.of(
+                          context,
+                        ).push(MaterialPageRoute(builder: (_) {
+                          return RegisterSplash();
+                        }));
+                      }
                     },
                   ),
                 ),

@@ -25,9 +25,12 @@ dependencies:
   http: ^0.13.3
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   provider: ^6.0.0
   flutter_facebook_auth: "^3.5.0"
   firebase_core: ^1.5.0
+  firebase_database: ^7.0.0 
   cloud_firestore: ^2.5.0 # new
   firebase_auth: ^3.0.2   # new
   google_fonts: ^2.0.0
