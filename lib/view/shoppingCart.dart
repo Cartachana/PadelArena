@@ -40,7 +40,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
                           final reservations =
                               snapshot.data as List<Reservation>;
                           tilesList.addAll(reservations.map((nextReservation) {
-                            if (_user.email == nextReservation.userEmail) {
+                            if (_user.email == nextReservation.userEmail &&
+                                nextReservation.state == 'por completar') {
                               return ListTile(
                                   leading: Icon(Icons.lock_clock),
                                   title: Text('Das ' +
