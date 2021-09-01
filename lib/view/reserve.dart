@@ -1,24 +1,104 @@
+import 'dart:async';
 import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cork_padel/models/ReservationStreamPublisher.dart';
 import 'package:cork_padel/models/reservation.dart';
 import 'package:cork_padel/models/user.dart';
+import 'package:cork_padel/register/authentication.dart';
+import 'package:cork_padel/view/shoppingCart.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
+import 'package:simple_moment/simple_moment.dart';
 
 class Reserve extends StatefulWidget {
   @override
   _ReserveState createState() => _ReserveState();
 }
 
+void showToast({
+  required BuildContext context,
+}) {
+  OverlayEntry overlayEntry;
+
+  overlayEntry = OverlayEntry(builder: (context) => ToastWidget());
+  Overlay.of(context)!.insert(overlayEntry);
+  Timer(Duration(seconds: 4), () => overlayEntry.remove());
+}
+
 class _ReserveState extends State<Reserve> {
   final database = FirebaseDatabase.instance.reference();
+
   Userr _user = Userr();
   String? _selectedDuration;
+  String _warning = 'Nenhuma Hora Escolhida!';
 
   DateTime? _selectedDate;
   TimeOfDay? _timeChosen;
+  bool _reservationValid = false;
+  bool _isNotNow = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void _activateListeners() {
+    final reservations = database.child('reservations/');
+    reservations.onValue.listen((event) {
+      if (event.snapshot.value != null) {
+        final reservation = Map<String, dynamic>.from(event.snapshot.value);
+        reservation.forEach((key, value) {
+          String selectedDay = DateFormat('dd/MM/yyyy').format(_selectedDate!);
+          String dbDay = value['day'];
+          if (selectedDay == dbDay) {
+            String maxTimeText = value['hour'];
+            TimeOfDay _startTime = TimeOfDay(
+                hour: int.parse(maxTimeText.split(":")[0]),
+                minute: int.parse(maxTimeText.split(":")[1]));
+
+            String minTimeText = value['duration'];
+            TimeOfDay _endTime = TimeOfDay(
+                hour: int.parse(minTimeText.split(":")[0]),
+                minute: int.parse(minTimeText.split(":")[1]));
+
+            TimeOfDay _until;
+            _until = _timeChosen!.plusMinutes(int.parse(_selectedDuration!));
+
+            double dbStartTime = toDouble(_startTime);
+            double dbEndTime = toDouble(_endTime);
+            double pickedStartTime = toDouble(_timeChosen!);
+            double pickedEndTime = toDouble(_until);
+
+            if (dbStartTime <= pickedStartTime &&
+                dbEndTime >= pickedStartTime) {
+              _reservationValid = false;
+              _timeChosen = null;
+              _warning = 'Ja existe uma reserva a essa hora!';
+            } else if (dbStartTime <= pickedEndTime &&
+                dbEndTime >= pickedEndTime) {
+              _reservationValid = false;
+              _timeChosen = null;
+              _warning = 'Ja existe uma reserva a essa hora!';
+            } else if (pickedStartTime <= dbStartTime &&
+                dbEndTime <= pickedEndTime) {
+              _reservationValid = false;
+              _timeChosen = null;
+              _warning = 'Ja existe uma reserva a essa hora!';
+            } else {
+              _reservationValid = true;
+            }
+          }
+        });
+      } else {
+        _reservationValid = true;
+      }
+    });
+  }
 
   void _presentDatePicker() {
+    _reservationValid = false;
     showDatePicker(
             context: context,
             locale: const Locale("pt", "PT"),
@@ -31,53 +111,110 @@ class _ReserveState extends State<Reserve> {
       }
       setState(() {
         _selectedDate = value;
+        _timeChosen = null;
+        _warning = 'Nenuma Hora Escolhida!';
       });
     });
   }
 
   void _presentTimePicker() {
+    _reservationValid = false;
     showTimePicker(
-            context: context, initialTime: TimeOfDay(hour: 8, minute: 00))
-        .then((value) {
+      context: context,
+      initialTime: TimeOfDay(hour: 8, minute: 00),
+    ).then((value) {
       if (value == null) {
         return;
+      } else {
+        var date = DateTime.now();
+        if (_selectedDate != null) {
+          var pickedTime = DateTime(_selectedDate!.year, _selectedDate!.month,
+              _selectedDate!.day, value.hour, value.minute);
+//COMPARING PICKED DATE WITH DATE NOW
+          var comparison = pickedTime.compareTo(date);
+
+// IF DATA CHOSEN IS AFTER NOW
+          if (comparison == 1) {
+            setState(() {
+              _timeChosen = value;
+              _isNotNow = true;
+            });
+//IF DATE CHOSEN IS NOW OR BEFORE
+          } else {
+            setState(() {
+              _timeChosen = null;
+              _warning = 'Muito Cedo';
+              _isNotNow = true;
+            });
+          }
+          _activateListeners();
+        } else {
+//IF DAY IS NOT CHOSEN YET
+          setState(() {
+            _timeChosen = null;
+            _warning = 'Escolha o Dia Primeiro';
+          });
+        }
       }
-      setState(() {
-        _timeChosen = value;
-      });
     });
   }
 
   num randomNumbers() {
     var rndnumber = "";
     var rnd = new Random();
-    for (num i = 1; i < 10; i++) {
+    for (num i = 1; i < 7; i++) {
       rndnumber = rndnumber + (rnd.nextInt(9) + 1).toString();
     }
     num number = num.parse(rndnumber);
     return number;
   }
 
+  void _showShoppingCart(BuildContext ctx) {
+    showModalBottomSheet(
+        context: ctx,
+        builder: (_) {
+          return GestureDetector(
+            onTap: () {},
+            child: ShoppingCart(),
+            behavior: HitTestBehavior.opaque,
+          );
+        });
+  }
+
+  var tempReservations = <Reservation>[];
+  var days = <String>[];
+
   void _reserve() async {
+    print('WHAT IS WRONG');
     num _id = randomNumbers();
-    Reservation _reservation = Reservation();
+
     final reservations = database.child('reservations/');
-    final day =
-        reservations.child(DateFormat('ddMMyyyy').format(_selectedDate!));
-    final time = day.child("${_timeChosen!.format(context)}");
-    _reservation.id = _id.toString();
-    _reservation.hour = _timeChosen!.format(context);
-    _reservation.duration = _selectedDuration!;
-    _reservation.state = 'open';
-    _reservation.userEmail = _user.email;
+    final day = reservations.child(
+        DateFormat('ddMMyyyy').format(_selectedDate!) +
+            "${_timeChosen!.format(context)}");
+    String until = _selectedDuration!;
+    TimeOfDay _until;
+    _until = _timeChosen!.plusMinutes(int.parse(_selectedDuration!));
+    until = _until.format(context);
+
+    Reservation _reservation = Reservation(
+        id: _id.toString(),
+        day: DateFormat('dd/MM/yyyy').format(_selectedDate!),
+        hour: _timeChosen!.format(context),
+        duration: until,
+        state: 'por completar',
+        userEmail: _user.email,
+        completed: false);
     try {
       //await reservations.set(_reservation);
-      await time.set({
+      await day.set({
         'id': _reservation.id,
+        'day': _reservation.day,
         'hour': _reservation.hour,
         'duration': _reservation.duration,
-        'state': 'open',
-        'client_email': _user.email
+        'state': _reservation.state,
+        'client_email': _reservation.userEmail,
+        'completed': _reservation.completed,
       });
     } catch (e) {
       print('There is an error!');
@@ -87,17 +224,25 @@ class _ReserveState extends State<Reserve> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _showShoppingCart(context);
+        },
+        child: Icon(Icons.shopping_cart),
+      ),
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text("Cork Padel Arena"),
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: Center(
+      body: Container(
         child: SingleChildScrollView(
           child: Container(
             alignment: Alignment.topCenter,
             margin: EdgeInsets.all(10),
-            width: double.infinity,
+            constraints: BoxConstraints(
+                minHeight: 600, minWidth: double.infinity, maxHeight: 680),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               //mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -132,6 +277,7 @@ class _ReserveState extends State<Reserve> {
                         padding: const EdgeInsets.all(8.0),
                         child: Row(children: <Widget>[
                           Expanded(
+//TEXT SHOWING CHOSEN DATE////////////////////////////////////////////////
                             child: Text(
                               _selectedDate == null
                                   ? 'Nenhuma data escolhida!'
@@ -142,8 +288,11 @@ class _ReserveState extends State<Reserve> {
                                   fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ),
+//BUTTON TO CHOOSE DATE////////////////////////////////////////////////
                           TextButton(
-                            onPressed: _presentDatePicker,
+                            onPressed: () {
+                              _presentDatePicker();
+                            },
                             child: Text("Escolher Data",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
@@ -158,15 +307,17 @@ class _ReserveState extends State<Reserve> {
                         padding: const EdgeInsets.all(8.0),
                         child: Row(children: <Widget>[
                           Expanded(
+//TEXT SHOWING CHOSEN TIME ////////////////////////////////////////////////
                             child: Text(
                               _timeChosen == null
-                                  ? 'Nenhuma hora escolhida!'
+                                  ? _warning
                                   : 'Hora Escolhida: ' +
                                       "${_timeChosen!.format(context)}",
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ),
+//BUTTON TO CHOOSE TIME ////////////////////////////////////////////////
                           TextButton(
                             onPressed: _presentTimePicker,
                             child: Text("Escolher Hora",
@@ -191,7 +342,8 @@ class _ReserveState extends State<Reserve> {
                               ),
                               Container(
                                 padding: EdgeInsets.all(15),
-                                width: 150,
+                                width: 120,
+//DROPDOWN LIST TO CHOOSE DURATION ////////////////////////////////////////////////
                                 child: DropdownButton<String>(
                                   hint: Text('Escolha'),
                                   value: _selectedDuration,
@@ -205,7 +357,11 @@ class _ReserveState extends State<Reserve> {
                                   onChanged: (newValue) {
                                     setState(
                                       () {
-                                        _selectedDuration = newValue;
+                                        if (_timeChosen != null) {
+                                          _reservationValid = false;
+                                          _selectedDuration = newValue;
+                                          _activateListeners();
+                                        }
                                       },
                                     );
                                   },
@@ -224,6 +380,7 @@ class _ReserveState extends State<Reserve> {
                 Container(
                   padding: EdgeInsets.all(15),
                   width: 150,
+////////////////////// BUTTON TO RESERVE ////////////////////////////////////////////////
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       primary: Theme.of(context).primaryColor,
@@ -234,11 +391,111 @@ class _ReserveState extends State<Reserve> {
                       style: TextStyle(fontSize: 15),
                     ),
                     onPressed: () {
-                      _reserve();
+                      //_activateListeners();
+                      if (_reservationValid && _isNotNow) {
+                        _reserve();
+                        showToast(context: context);
+                      } else {
+                        _timeChosen = null;
+                        _warning = 'Slot invalido!';
+                      }
                     },
                   ),
                 ),
+////////////////// LIST SHOWING RESERVES FOR THIS DAY ////////////////////////////////////////////////
+                Text('Slots Reservados neste dia:'),
+                _selectedDate != null
+                    ? StreamBuilder(
+                        stream:
+                            ReservationStreamPublisher().getReservationStream(),
+                        builder: (context, snapshot) {
+                          final tilesList = <ListTile>[];
+                          if (snapshot.hasData) {
+                            try {
+                              final reservations =
+                                  snapshot.data as List<Reservation>;
+                              tilesList
+                                  .addAll(reservations.map((nextReservation) {
+                                if (nextReservation.day ==
+                                    DateFormat('dd/MM/yyyy')
+                                        .format(_selectedDate!)) {
+                                  return ListTile(
+                                      leading: Icon(Icons.lock_clock),
+                                      title: Text('Das ' +
+                                          nextReservation.hour +
+                                          ' as ' +
+                                          nextReservation.duration),
+                                      subtitle: Text(nextReservation.state));
+                                } else {
+                                  return ListTile();
+                                }
+                              }));
+                            } catch (e) {
+                              return Text(
+                                  'Ainda nao existem reservas neste dia');
+                            }
+                          }
+                          // }
+                          if (tilesList.isNotEmpty) {
+                            return Expanded(
+                              child: ListView(
+                                children: tilesList,
+                              ),
+                            );
+                          }
+                          return Text('');
+                        })
+                    : SizedBox(),
               ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+extension TimeOfDayExtension on TimeOfDay {
+  // Ported from org.threeten.bp;
+  TimeOfDay plusMinutes(int minutes) {
+    if (minutes == 0) {
+      return this;
+    } else {
+      int mofd = this.hour * 60 + this.minute;
+      int newMofd = ((minutes % 1440) + mofd + 1440) % 1440;
+      if (mofd == newMofd) {
+        return this;
+      } else {
+        int newHour = newMofd ~/ 60;
+        int newMinute = newMofd % 60;
+        return TimeOfDay(hour: newHour, minute: newMinute);
+      }
+    }
+  }
+}
+
+double toDouble(TimeOfDay myTime) => myTime.hour + myTime.minute / 60.0;
+
+class ToastWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      top: 100.0,
+      width: MediaQuery.of(context).size.width - 20,
+      left: 10,
+      child: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Material(
+          color: Colors.lime,
+          elevation: 10.0,
+          borderRadius: BorderRadius.circular(10),
+          child: Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: Text(
+              'Reserva adicionada ao carrinho',
+              style: TextStyle(
+                fontSize: 16,
+              ),
             ),
           ),
         ),

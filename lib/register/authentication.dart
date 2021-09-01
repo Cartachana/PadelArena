@@ -21,6 +21,7 @@ enum ApplicationLoginState {
 
 class Authentication extends StatelessWidget {
   Userr _userr = Userr();
+
   Future<void> currentUser() {
     getDetails();
     final String _email = _userr.email.toString();
@@ -149,7 +150,7 @@ class Authentication extends StatelessWidget {
           getDetails: getDetails,
         );
       case ApplicationLoginState.detailsNotEntered:
-        currentUser();
+        getDetails();
         return UserDetailsWidget();
       case ApplicationLoginState.emailNotVerified:
         return Verify(checkEmailVerified, emailVerified);
@@ -643,19 +644,19 @@ class Verify extends StatefulWidget {
 }
 
 class _VerifyState extends State<Verify> {
-  final User? _user = FirebaseAuth.instance.currentUser;
+  User? _user;
   Timer? timer;
   @override
   void initState() {
+    _user = FirebaseAuth.instance.currentUser;
     timer = Timer.periodic(Duration(seconds: 5), (timer) {
       if (_user!.emailVerified) {
         timer.cancel();
         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) {
           return MyApp();
         }));
-      } else {
-        widget.checkEmailVerified;
       }
+      widget.checkEmailVerified;
     });
 
     super.initState();

@@ -1,4 +1,4 @@
-import 'package:cork_padel/view/registerSplash.dart';
+import 'package:cork_padel/src/registerSplash.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -334,6 +334,8 @@ class AddUser {
   final String _nif;
   final String _email;
 
+  User? _user = FirebaseAuth.instance.currentUser;
+
   AddUser(this._id, this._role, this._name, this._surname, this._address,
       this._city, this._postCode, this._nif, this._email);
 
@@ -353,7 +355,7 @@ class AddUser {
       'postal_code': _postCode
     }).then((value) {
       print("User Added");
-      final User? _user = FirebaseAuth.instance.currentUser;
+
       _user!.sendEmailVerification();
     }).catchError((error) => print("Failed to add user: $error"));
   }
