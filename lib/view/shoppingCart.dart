@@ -1,6 +1,8 @@
 import 'package:cork_padel/models/ReservationStreamPublisher.dart';
 import 'package:cork_padel/models/reservation.dart';
 import 'package:cork_padel/models/user.dart';
+import 'package:cork_padel/src/widgets.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class ShoppingCart extends StatefulWidget {
@@ -18,6 +20,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(color: Colors.grey.shade100),
       child: Column(
         children: [
           Text(
@@ -30,69 +33,117 @@ class _ShoppingCartState extends State<ShoppingCart> {
           ),
           Expanded(
             child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: StreamBuilder(
-                    stream: ReservationStreamPublisher().getReservationStream(),
-                    builder: (context, snapshot) {
-                      final tilesList = <ListTile>[];
-                      if (snapshot.hasData) {
-                        try {
-                          final reservations =
-                              snapshot.data as List<Reservation>;
-                          tilesList.addAll(reservations.map((nextReservation) {
-                            if (_user.email == nextReservation.userEmail &&
-                                nextReservation.state == 'por completar') {
-                              return ListTile(
-                                  leading: Icon(Icons.lock_clock),
-                                  title: Text('Das ' +
-                                      nextReservation.hour +
-                                      ' as ' +
-                                      nextReservation.duration),
-                                  subtitle: Text(nextReservation.state));
-                            } else {
-                              return ListTile();
-                            }
-                          }));
-                        } catch (e) {
-                          return Text('O carrinho esta vazio');
-                        }
+              padding: const EdgeInsets.all(2.0),
+              child: StreamBuilder(
+                  stream: ReservationStreamPublisher().getReservationStream(),
+                  builder: (context, snapshot) {
+                    final tilesList = <Card>[];
+                    if (snapshot.hasData) {
+                      try {
+                        final reservations = snapshot.data as List<Reservation>;
+                        tilesList.addAll(reservations.map((nextReservation) {
+                          if (_user.email == nextReservation.userEmail &&
+                              nextReservation.state == 'por completar') {
+                            return Card(
+                              elevation: 5,
+                              child: ListTile(
+                                leading: Icon(Icons.watch),
+                                title: Text('Dia ' + nextReservation.day),
+                                subtitle: Text('Das ' +
+                                    nextReservation.hour +
+                                    ' as ' +
+                                    nextReservation.duration),
+                                trailing: IconButton(
+                                  icon: Icon(Icons.delete),
+                                  onPressed: () {
+                                    _deleting(context, nextReservation.id);
+                                  },
+                                ),
+                              ),
+                            );
+                          } else {
+                            return Card();
+                          }
+                        }));
+                      } catch (e) {
+                        return Text('O carrinho esta vazio');
                       }
-                      // }
-                      if (tilesList.isNotEmpty) {
-                        return Expanded(
-                          child: ListView(
-                            children: tilesList,
-                          ),
-                        );
-                      }
-                      return Text('');
-                    })
-                // child: ListView.builder(
-                //     itemBuilder: (ctx, index) {
-                //       return Card(
-                //         child: Column(
-                //           crossAxisAlignment: CrossAxisAlignment.start,
-                //           children: <Widget>[
-                //             Text(
-                //               'Data: ' + widget.days[index],
-                //               style: Theme.of(context).textTheme.headline6,
-                //             ),
-                //             Text(
-                //               'Das ' +
-                //                   widget.tempRes[index].hour +
-                //                   ' as ' +
-                //                   widget.tempRes[index].duration,
-                //               style: TextStyle(color: Colors.grey),
-                //             )
-                //           ],
-                //         ),
-                //       );
-                //     },
-                //     itemCount: widget.tempRes.length),
+                    }
+                    // }
+                    if (tilesList.isNotEmpty) {
+                      return Padding(
+                        padding: EdgeInsets.all(0),
+                        child: ListView(
+                          children: tilesList,
+                        ),
+                      );
+                    }
+                    return Text('O carrinho esta vazio');
+                  }),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                'Total:',
+                style: TextStyle(
+                  fontFamily: 'Roboto Condensed',
+                  fontSize: 26,
+                  color: Theme.of(context).primaryColor,
                 ),
+              ),
+            ],
           ),
         ],
       ),
+    );
+  }
+
+  void _deleting(BuildContext context, String id) {
+    final _database =
+        FirebaseDatabase.instance.reference().child('reservations').child(id);
+    showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            'Cancelar',
+            style: const TextStyle(fontSize: 24),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                  'Tem certeza de que quer cancelar esta reserva?',
+                  style: const TextStyle(fontSize: 18),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            StyledButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Nao cancelar',
+                style: TextStyle(color: Colors.deepPurple),
+              ),
+            ),
+            StyledButton(
+              onPressed: () {
+                _database.remove();
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Sim, Cancelar',
+                style: TextStyle(color: Colors.deepPurple),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

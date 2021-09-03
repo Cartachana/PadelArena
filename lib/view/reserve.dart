@@ -1,16 +1,13 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cork_padel/models/ReservationStreamPublisher.dart';
 import 'package:cork_padel/models/reservation.dart';
 import 'package:cork_padel/models/user.dart';
-import 'package:cork_padel/register/authentication.dart';
 import 'package:cork_padel/view/shoppingCart.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
-import 'package:simple_moment/simple_moment.dart';
 
 class Reserve extends StatefulWidget {
   @override
@@ -33,6 +30,7 @@ class _ReserveState extends State<Reserve> {
   Userr _user = Userr();
   String? _selectedDuration;
   String _warning = 'Nenhuma Hora Escolhida!';
+  String _warning2 = '';
 
   DateTime? _selectedDate;
   TimeOfDay? _timeChosen;
@@ -89,6 +87,8 @@ class _ReserveState extends State<Reserve> {
             } else {
               _reservationValid = true;
             }
+          } else {
+            _reservationValid = true;
           }
         });
       } else {
@@ -138,16 +138,16 @@ class _ReserveState extends State<Reserve> {
             setState(() {
               _timeChosen = value;
               _isNotNow = true;
+              _activateListeners();
             });
 //IF DATE CHOSEN IS NOW OR BEFORE
           } else {
             setState(() {
               _timeChosen = null;
-              _warning = 'Muito Cedo';
+              _warning = 'Nao pode fazer reservas no passado';
               _isNotNow = true;
             });
           }
-          _activateListeners();
         } else {
 //IF DAY IS NOT CHOSEN YET
           setState(() {
@@ -185,26 +185,26 @@ class _ReserveState extends State<Reserve> {
   var days = <String>[];
 
   void _reserve() async {
-    print('WHAT IS WRONG');
-    num _id = randomNumbers();
-
     final reservations = database.child('reservations/');
-    final day = reservations.child(
-        DateFormat('ddMMyyyy').format(_selectedDate!) +
-            "${_timeChosen!.format(context)}");
+    num _pin = randomNumbers();
+    String _idd = DateFormat('ddMMyyyy').format(_selectedDate!) +
+        "${_timeChosen!.format(context)}";
+
+    final day = reservations.child(_idd);
     String until = _selectedDuration!;
     TimeOfDay _until;
     _until = _timeChosen!.plusMinutes(int.parse(_selectedDuration!));
     until = _until.format(context);
 
     Reservation _reservation = Reservation(
-        id: _id.toString(),
+        pin: _pin.toString(),
         day: DateFormat('dd/MM/yyyy').format(_selectedDate!),
         hour: _timeChosen!.format(context),
         duration: until,
         state: 'por completar',
         userEmail: _user.email,
-        completed: false);
+        completed: false,
+        id: _idd);
     try {
       //await reservations.set(_reservation);
       await day.set({
@@ -358,6 +358,7 @@ class _ReserveState extends State<Reserve> {
                                     setState(
                                       () {
                                         if (_timeChosen != null) {
+                                          _warning2 = '';
                                           _reservationValid = false;
                                           _selectedDuration = newValue;
                                           _activateListeners();
@@ -377,6 +378,7 @@ class _ReserveState extends State<Reserve> {
                     ],
                   ),
                 ),
+                Text(_warning2),
                 Container(
                   padding: EdgeInsets.all(15),
                   width: 150,
@@ -391,13 +393,24 @@ class _ReserveState extends State<Reserve> {
                       style: TextStyle(fontSize: 15),
                     ),
                     onPressed: () {
-                      //_activateListeners();
-                      if (_reservationValid && _isNotNow) {
+                      print(_reservationValid);
+                      print(_isNotNow);
+                      _activateListeners();
+                      if (_reservationValid &&
+                          _isNotNow &&
+                          _selectedDuration != null) {
                         _reserve();
                         showToast(context: context);
-                      } else {
+                      } else if (!_reservationValid || !_isNotNow) {
                         _timeChosen = null;
                         _warning = 'Slot invalido!';
+                        setState(() {
+                          _warning2 = 'Slot invalido!';
+                        });
+                      } else if (_selectedDuration == null) {
+                        setState(() {
+                          _warning2 = 'Escolha uma duracao';
+                        });
                       }
                     },
                   ),
@@ -411,24 +424,30 @@ class _ReserveState extends State<Reserve> {
                         builder: (context, snapshot) {
                           final tilesList = <ListTile>[];
                           if (snapshot.hasData) {
+                            List reservations =
+                                snapshot.data as List<Reservation>;
+                            int i = 0;
+                            do {
+                              if (reservations.isNotEmpty) {
+                                if (reservations[i].day !=
+                                    (DateFormat('dd/MM/yyyy')
+                                        .format(_selectedDate!))) {
+                                  reservations.removeAt(i);
+                                  i = i;
+                                } else
+                                  i++;
+                              }
+                            } while (i < reservations.length);
                             try {
-                              final reservations =
-                                  snapshot.data as List<Reservation>;
                               tilesList
                                   .addAll(reservations.map((nextReservation) {
-                                if (nextReservation.day ==
-                                    DateFormat('dd/MM/yyyy')
-                                        .format(_selectedDate!)) {
-                                  return ListTile(
-                                      leading: Icon(Icons.lock_clock),
-                                      title: Text('Das ' +
-                                          nextReservation.hour +
-                                          ' as ' +
-                                          nextReservation.duration),
-                                      subtitle: Text(nextReservation.state));
-                                } else {
-                                  return ListTile();
-                                }
+                                return ListTile(
+                                    leading: Icon(Icons.lock_clock),
+                                    title: Text('Das ' +
+                                        nextReservation.hour +
+                                        ' as ' +
+                                        nextReservation.duration),
+                                    subtitle: Text(nextReservation.state));
                               }));
                             } catch (e) {
                               return Text(

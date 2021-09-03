@@ -142,6 +142,7 @@ class ApplicationState extends ChangeNotifier {
     void Function(FirebaseAuthException e) errorCallback,
   ) async {
     try {
+      // await Firebase.initializeApp();
       var methods =
           await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
       if (methods.contains('password')) {
@@ -202,7 +203,7 @@ class ApplicationState extends ChangeNotifier {
     await Firebase.initializeApp();
 
     _user = FirebaseAuth.instance.currentUser;
-    await _user!.reload();
+    //await _user!.reload();
     if (_user!.emailVerified) {
       emailVerified = true;
       _loginState = ApplicationLoginState.loggedIn;
