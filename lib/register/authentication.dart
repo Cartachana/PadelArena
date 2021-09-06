@@ -651,6 +651,8 @@ class _RegisterFormState extends State<RegisterForm> {
                           _displayNameController.text,
                           _passwordController.text,
                         );
+
+                        ///PROBLEM. IT IS NAVIGATING EVEN IF THE REGISTRATION IS NOT SUCCESSFUL
                         widget.getDetails();
                         Navigator.of(context)
                             .pushReplacement(MaterialPageRoute(builder: (_) {
