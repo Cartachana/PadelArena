@@ -4,6 +4,7 @@ import 'package:cork_padel/view/onlineShop.dart';
 import 'package:cork_padel/view/profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../models/user.dart';
 import './reserve.dart';
 import 'contacts.dart';
@@ -41,8 +42,43 @@ class _DashState extends State<Dash> {
   }
 }
 
-class DashWidget extends StatelessWidget {
+class DashWidget extends StatefulWidget {
+  @override
+  _DashWidgetState createState() => _DashWidgetState();
+}
+
+class _DashWidgetState extends State<DashWidget> {
   Userr _userr = Userr();
+
+  Future<void>? _launched;
+
+  var _url = 'https://www.corkpadel.pt/en/store';
+
+  Future<void> _launchInBrowser(String url) async {
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        forceWebView: false,
+        //headers: <String, String>{'my_header_key': 'my_header_value'},
+      );
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  void setIt() {
+    setState(() {
+      _launched = _launchInBrowser(_url);
+    });
+  }
+
+  Widget _launchStatus(BuildContext context, AsyncSnapshot<void> snapshot) {
+    if (snapshot.hasError) {
+      return Text('Error: ${snapshot.error}');
+    } else {
+      return const Text('');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +113,7 @@ class DashWidget extends StatelessWidget {
                     mainAxisSpacing: 20),
               ),
             ),
+            FutureBuilder<void>(future: _launched, builder: _launchStatus)
           ],
         ));
   }
@@ -138,12 +175,16 @@ class DashWidget extends StatelessWidget {
       ),
       'Loja Online',
       Colors.lime,
-      (BuildContext ctx) {
-        Navigator.of(
-          ctx,
-        ).push(MaterialPageRoute(builder: (_) {
-          return OnlineShop();
-        }));
+      (BuildContext ctx) async {
+        if (await canLaunch('https://www.corkpadel.pt/en/store')) {
+          await launch(
+            'https://www.corkpadel.pt/en/store',
+            forceWebView: false,
+            //headers: <String, String>{'my_header_key': 'my_header_value'},
+          );
+        } else {
+          throw 'Could not launch the store';
+        }
       },
     ),
     Pages(
