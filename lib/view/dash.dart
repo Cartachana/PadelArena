@@ -1,6 +1,6 @@
 import 'package:cork_padel/models/menuItem.dart';
 import 'package:cork_padel/models/page.dart';
-//import 'package:cork_padel/view/onlineShop.dart';
+import 'package:cork_padel/view/onlineShop.dart';
 import 'package:cork_padel/view/profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -131,21 +131,21 @@ class DashWidget extends StatelessWidget {
         return Contacts();
       }));
     }),
-    // Pages(
-    //   Icon(
-    //     Icons.shopping_basket,
-    //     size: 50,
-    //   ),
-    //   'Loja Online',
-    //   Colors.lime,
-    //   (BuildContext ctx) {
-    //     Navigator.of(
-    //       ctx,
-    //     ).push(MaterialPageRoute(builder: (_) {
-    //       return OnlineShop();
-    //     }));
-    //   },
-    // ),
+    Pages(
+      Icon(
+        Icons.shopping_basket,
+        size: 50,
+      ),
+      'Loja Online',
+      Colors.lime,
+      (BuildContext ctx) {
+        Navigator.of(
+          ctx,
+        ).push(MaterialPageRoute(builder: (_) {
+          return OnlineShop();
+        }));
+      },
+    ),
     Pages(
         Icon(
           Icons.logout,

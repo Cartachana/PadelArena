@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:square_in_app_payments/in_app_payments.dart';
+import 'package:square_in_app_payments/models.dart';
 import '../models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -17,7 +19,12 @@ void main() {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -29,6 +36,51 @@ class MyApp extends StatelessWidget {
       ),
       home: HomePage(),
     );
+  }
+
+  /** 
+  * An event listener to start card entry flow
+  */
+  Future<void> _onStartCardEntryFlow() async {
+    await InAppPayments.startCardEntryFlow(
+        onCardNonceRequestSuccess: _onCardEntryCardNonceRequestSuccess,
+        onCardEntryCancel: _onCancelCardEntryFlow);
+  }
+
+  /**
+  * Callback when card entry is cancelled and UI is closed
+  */
+  void _onCancelCardEntryFlow() {
+    // Handle the cancel callback
+  }
+
+  /**
+  * Callback when successfully get the card nonce details for processig
+  * card entry is still open and waiting for processing card nonce details
+  */
+  void _onCardEntryCardNonceRequestSuccess(CardDetails result) async {
+    try {
+      // take payment with the card nonce details
+      // you can take a charge
+      // await chargeCard(result);
+
+      // payment finished successfully
+      // you must call this method to close card entry
+      // this ONLY apply to startCardEntryFlow, please don't call this method when use startCardEntryFlowWithBuyerVerification
+      InAppPayments.completeCardEntry(
+          onCardEntryComplete: _onCardEntryComplete);
+    } on Exception catch (ex) {
+      // payment failed to complete due to error
+      // notify card entry to show processing error
+      InAppPayments.showCardNonceProcessingError('error');
+    }
+  }
+
+  /**
+  * Callback when the card entry is closed after call 'completeCardEntry'
+  */
+  void _onCardEntryComplete() {
+    // Update UI to notify user that the payment flow is finished successfully
   }
 }
 
@@ -219,3 +271,20 @@ class ApplicationState extends ChangeNotifier {
     FirebaseAuth.instance.signOut();
   }
 }
+
+
+
+// Note: To start the payment flow with Strong Customer Authentication,
+//you should call startCardEntryFlowWithBuyerVerification.
+//InAppPayments.completeCardEntry
+//is NOT needed for this call.
+
+// Note: To start Strong Customer Authentication for card-on-file,
+//you should call startBuyerVerificationFlow. InAppPayments.completeCardEntry
+//is NOT needed for this call.
+
+// Note: The chargeCard method in this example shows a typical REST request
+//on a backend process that uses the Payments API to take a payment with the
+//supplied nonce.
+//See BackendQuickStart Sample to learn about building an app that
+//processes payment nonces on a server.
