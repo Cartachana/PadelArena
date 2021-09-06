@@ -1,6 +1,6 @@
 import 'package:cork_padel/models/menuItem.dart';
 import 'package:cork_padel/models/page.dart';
-import 'package:cork_padel/view/onlineShop.dart';
+//import 'package:cork_padel/view/onlineShop.dart';
 import 'package:cork_padel/view/profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +11,12 @@ import 'myReservations.dart';
 
 //import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Dash extends StatelessWidget {
+class Dash extends StatefulWidget {
+  @override
+  _DashState createState() => _DashState();
+}
+
+class _DashState extends State<Dash> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,18 +106,18 @@ class DashWidget extends StatelessWidget {
         }));
       },
     ),
-    Pages(
-      Icon(Icons.perm_contact_calendar, size: 50),
-      'Minhas Reservas',
-      Colors.lime,
-      (BuildContext ctx) {
-        Navigator.of(
-          ctx,
-        ).push(MaterialPageRoute(builder: (_) {
-          return MyReservations();
-        }));
-      },
-    ),
+    // Pages(
+    //   Icon(Icons.perm_contact_calendar, size: 50),
+    //   'Minhas Reservas',
+    //   Colors.lime,
+    //   (BuildContext ctx) {
+    //     Navigator.of(
+    //       ctx,
+    //     ).push(MaterialPageRoute(builder: (_) {
+    //       return MyReservations();
+    //     }));
+    //   },
+    // ),
     Pages(
         Icon(
           Icons.phone,
@@ -126,21 +131,21 @@ class DashWidget extends StatelessWidget {
         return Contacts();
       }));
     }),
-    Pages(
-      Icon(
-        Icons.shopping_basket,
-        size: 50,
-      ),
-      'Loja Online',
-      Colors.lime,
-      (BuildContext ctx) {
-        Navigator.of(
-          ctx,
-        ).push(MaterialPageRoute(builder: (_) {
-          return OnlineShop();
-        }));
-      },
-    ),
+    // Pages(
+    //   Icon(
+    //     Icons.shopping_basket,
+    //     size: 50,
+    //   ),
+    //   'Loja Online',
+    //   Colors.lime,
+    //   (BuildContext ctx) {
+    //     Navigator.of(
+    //       ctx,
+    //     ).push(MaterialPageRoute(builder: (_) {
+    //       return OnlineShop();
+    //     }));
+    //   },
+    // ),
     Pages(
         Icon(
           Icons.logout,

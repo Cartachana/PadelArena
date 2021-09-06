@@ -7,6 +7,8 @@ class Reservation {
   late String userEmail;
   late bool completed;
   late String id;
+  late String dateMade;
+  late String timeMade;
 
   Reservation(
       {required this.pin,
@@ -16,7 +18,9 @@ class Reservation {
       required this.state,
       required this.userEmail,
       required this.completed,
-      required this.id});
+      required this.id,
+      required this.dateMade,
+      required this.timeMade});
 
   factory Reservation.fromRTDB(Map<String, dynamic> data) {
     return Reservation(
@@ -27,7 +31,9 @@ class Reservation {
         state: data['state'],
         userEmail: data['client_email'],
         completed: data['completed'],
-        id: data['id']);
+        id: data['id'],
+        dateMade: '',
+        timeMade: '');
     //factory Reservation() => _reservation;
   }
 }

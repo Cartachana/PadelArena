@@ -85,38 +85,40 @@ class HomePage extends StatelessWidget {
 }
 
 class ApplicationState extends ChangeNotifier {
+  late FirebaseAuth auth;
   ApplicationState() {
     init();
   }
 
   Future<void> init() async {
     await Firebase.initializeApp();
-
-    FirebaseAuth.instance.userChanges().listen((user) {
+    auth = FirebaseAuth.instance;
+    FirebaseAuth.instance.userChanges().listen((user) async {
       if (user != null) {
-        if (user.emailVerified) {
-          emailVerified = true;
+        if (auth.currentUser!.emailVerified) {
           _loginState = ApplicationLoginState.loggedIn;
-          notifyListeners();
+          //notifyListeners();
         } else {
-          FirebaseFirestore.instance
+          await FirebaseFirestore.instance
               .collection('users')
-              .doc(user.email)
+              .doc(user.email.toString())
               .get()
               .then((onexist) {
             onexist.exists ? ok = true : ok = false;
           });
           if (ok) {
             _loginState = ApplicationLoginState.emailNotVerified;
-            notifyListeners();
+            print('not verif');
+            //notifyListeners();
           } else {
             _loginState = ApplicationLoginState.detailsNotEntered;
-            notifyListeners();
+            print('no details');
+            //notifyListeners();
           }
         }
       } else {
         _loginState = ApplicationLoginState.loggedOut;
-        notifyListeners();
+        //notifyListeners();
       }
       notifyListeners();
     });
@@ -142,7 +144,7 @@ class ApplicationState extends ChangeNotifier {
     void Function(FirebaseAuthException e) errorCallback,
   ) async {
     try {
-      // await Firebase.initializeApp();
+      await Firebase.initializeApp();
       var methods =
           await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
       if (methods.contains('password')) {
@@ -167,16 +169,16 @@ class ApplicationState extends ChangeNotifier {
         email: email,
         password: password,
       );
-      _user = FirebaseAuth.instance.currentUser;
+      _user = auth.currentUser;
     } on FirebaseAuthException catch (e) {
       errorCallback(e);
     }
   }
 
-  void getUserDetails() {
-    User? _user = FirebaseAuth.instance.currentUser;
+  void getUserDetails() async {
+    _user = auth.currentUser;
     _userr.id = _user!.uid.toString();
-    _userr.email = _user.email.toString();
+    _userr.email = _user!.email.toString();
   }
 
   void cancelRegistration() {
@@ -189,7 +191,7 @@ class ApplicationState extends ChangeNotifier {
     try {
       var credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
-      await credential.user!.updateProfile(displayName: displayName);
+      await credential.user!.updateDisplayName(displayName);
       final User? user = credential.user;
       _user = FirebaseAuth.instance.currentUser;
       _userr.id = user!.uid.toString();
@@ -201,9 +203,10 @@ class ApplicationState extends ChangeNotifier {
 
   Future<void> checkEmailVerified() async {
     await Firebase.initializeApp();
+    auth = FirebaseAuth.instance;
+    _user = auth.currentUser!;
 
-    _user = FirebaseAuth.instance.currentUser;
-    //await _user!.reload();
+    await _user!.reload();
     if (_user!.emailVerified) {
       emailVerified = true;
       _loginState = ApplicationLoginState.loggedIn;

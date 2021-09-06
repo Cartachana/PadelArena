@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cork_padel/main.dart';
 import 'package:cork_padel/register/user_details.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../view/dash.dart';
 import '../src/widgets.dart';
@@ -20,7 +21,7 @@ enum ApplicationLoginState {
 }
 
 class Authentication extends StatelessWidget {
-  Userr _userr = Userr();
+  final Userr _userr = Userr();
 
   Future<void> currentUser() {
     getDetails();
@@ -118,16 +119,17 @@ class Authentication extends StatelessWidget {
       case ApplicationLoginState.emailAddress:
         return EmailForm(
           callback: (email) => checkEmail(
-              email, (e) => _showErrorDialog(context, 'Email invalido', e)),
+              email, (e) => showErrorDialog(context, 'Email invalido', e)),
         );
       case ApplicationLoginState.password:
         return PasswordForm(
           email: email!,
           login: (email, password) {
             signInWithEmailAndPassword(email, password,
-                (e) => _showErrorDialog(context, 'Erro no login', e));
+                (e) => showErrorDialog(context, 'Erro no login', e));
           },
           getDetails: getDetails,
+          showError: showErrorDialog,
         );
       case ApplicationLoginState.register:
         return RegisterForm(
@@ -144,7 +146,7 @@ class Authentication extends StatelessWidget {
               email,
               displayName,
               password,
-              (e) => _showErrorDialog(context, 'Failed to create account', e),
+              (e) => showErrorDialog(context, 'Failed to create account', e),
             );
           },
           getDetails: getDetails,
@@ -168,7 +170,7 @@ class Authentication extends StatelessWidget {
     }
   }
 
-  void _showErrorDialog(BuildContext context, String title, Exception e) {
+  void showErrorDialog(BuildContext context, String title, Exception e) {
     showDialog<void>(
       context: context,
       builder: (context) {
@@ -303,12 +305,17 @@ class _EmailFormState extends State<EmailForm> {
 
 class PasswordForm extends StatefulWidget {
   const PasswordForm(
-      {required this.login, required this.email, required this.getDetails});
+      {required this.login,
+      required this.email,
+      required this.getDetails,
+      required this.showError});
   final String email;
   final void Function(String email, String password) login;
   @override
   _PasswordFormState createState() => _PasswordFormState();
   final void Function() getDetails;
+  final void Function(BuildContext context, String title, Exception e)
+      showError;
 }
 
 class _PasswordFormState extends State<PasswordForm> {
@@ -415,6 +422,35 @@ class _PasswordFormState extends State<PasswordForm> {
                       },
                     ),
                   ),
+                ),
+                RichText(
+                  text: TextSpan(
+                      style: TextStyle(
+                        fontFamily: 'Roboto Condensed',
+                        fontSize: 16,
+                        color: Colors.lime,
+                      ),
+                      children: <TextSpan>[
+                        TextSpan(text: 'Esqueceu-se da password? '),
+                        TextSpan(
+                            text: 'Toque aqui!',
+                            style: TextStyle(
+                                fontFamily: 'Roboto Condensed',
+                                fontSize: 16,
+                                color: Colors.lime,
+                                fontWeight: FontWeight.bold),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () async {
+                                try {
+                                  await FirebaseAuth.instance
+                                      .sendPasswordResetEmail(
+                                          email: _emailController.text);
+                                } on FirebaseAuthException catch (er) {
+                                  widget.showError(
+                                      context, 'Insira o seu email', er);
+                                }
+                              })
+                      ]),
                 ),
               ],
             ),
@@ -644,19 +680,22 @@ class Verify extends StatefulWidget {
 }
 
 class _VerifyState extends State<Verify> {
-  User? _user;
-  Timer? timer;
+  final auth = FirebaseAuth.instance;
+
+  late Timer timer;
+  late User _user;
+
   @override
   void initState() {
-    _user = FirebaseAuth.instance.currentUser;
+    _user = auth.currentUser!;
     timer = Timer.periodic(Duration(seconds: 5), (timer) {
-      if (_user!.emailVerified) {
+      widget.checkEmailVerified;
+      if (_user.emailVerified) {
         timer.cancel();
         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) {
           return MyApp();
         }));
       }
-      widget.checkEmailVerified;
     });
 
     super.initState();
@@ -664,7 +703,7 @@ class _VerifyState extends State<Verify> {
 
   @override
   void dispose() {
-    timer!.cancel();
+    timer.cancel();
     super.dispose();
   }
 
@@ -675,7 +714,7 @@ class _VerifyState extends State<Verify> {
         child: Column(
           children: [
             Text(
-              'Um email foi enviado para ${_user!.email}. Por favor visite a sua caixa de email',
+              'Um email foi enviado para ${_user.email}. Por favor visite a sua caixa de email',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 18),
             ),
@@ -696,7 +735,7 @@ class _VerifyState extends State<Verify> {
                     style: TextStyle(fontSize: 15),
                   ),
                   onPressed: () {
-                    _user!.sendEmailVerification();
+                    _user.sendEmailVerification();
                   }),
             )
           ],

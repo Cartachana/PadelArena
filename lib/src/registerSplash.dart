@@ -1,6 +1,5 @@
 import 'package:cork_padel/main.dart';
 import 'package:flutter/material.dart';
-import '../view/dash.dart';
 
 class RegisterSplash extends StatefulWidget {
   @override

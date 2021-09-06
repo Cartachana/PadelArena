@@ -204,7 +204,9 @@ class _ReserveState extends State<Reserve> {
         state: 'por completar',
         userEmail: _user.email,
         completed: false,
-        id: _idd);
+        id: _idd,
+        dateMade: DateFormat('dd/MM/yyyy').format(DateTime.now()),
+        timeMade: DateFormat('HH:mm').format(DateTime.now()));
     try {
       //await reservations.set(_reservation);
       await day.set({
@@ -215,6 +217,8 @@ class _ReserveState extends State<Reserve> {
         'state': _reservation.state,
         'client_email': _reservation.userEmail,
         'completed': _reservation.completed,
+        'dateMade': _reservation.dateMade,
+        'timeMade': _reservation.timeMade,
       });
     } catch (e) {
       print('There is an error!');

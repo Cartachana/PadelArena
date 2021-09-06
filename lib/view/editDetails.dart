@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user.dart';
 
-class UserDetails extends StatefulWidget {
+class EditDetails extends StatefulWidget {
   @override
-  _UserDetailsState createState() => _UserDetailsState();
+  _EditDetailsState createState() => _EditDetailsState();
 }
 
-class _UserDetailsState extends State<UserDetails> {
+class _EditDetailsState extends State<EditDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -334,7 +334,7 @@ class AddUser {
   final String _nif;
   final String _email;
 
-  User? _user;
+  User? _user = FirebaseAuth.instance.currentUser;
 
   AddUser(this._id, this._role, this._name, this._surname, this._address,
       this._city, this._postCode, this._nif, this._email);
@@ -342,7 +342,6 @@ class AddUser {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
 
   Future<void> addUser() {
-    _user = FirebaseAuth.instance.currentUser;
     //Call the user's CollectionReference to add a new user
     return users.doc(_email).set({
       'id': _id,

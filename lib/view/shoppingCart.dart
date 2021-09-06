@@ -5,6 +5,8 @@ import 'package:cork_padel/src/widgets.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
+import 'checkout.dart';
+
 class ShoppingCart extends StatefulWidget {
   //String titleInput;
   //String amountInput;
@@ -83,7 +85,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
             ),
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Text(
                 'Total:',
@@ -93,6 +95,28 @@ class _ShoppingCartState extends State<ShoppingCart> {
                   color: Theme.of(context).primaryColor,
                 ),
               ),
+              Container(
+                  padding: EdgeInsets.all(15),
+                  width: 150,
+////////////////////// BUTTON TO RESERVE ////////////////////////////////////////////////
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Theme.of(context).primaryColor,
+                        onPrimary: Colors.white,
+                      ),
+                      child: Text(
+                        "Pagamento",
+                        style: TextStyle(fontSize: 15),
+                      ),
+                      onPressed: () {
+                        Navigator.of(
+                          context,
+                        ).push(
+                          MaterialPageRoute(builder: (_) {
+                            return Checkout();
+                          }),
+                        );
+                      }))
             ],
           ),
         ],
