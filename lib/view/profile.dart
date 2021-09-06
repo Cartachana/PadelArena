@@ -89,7 +89,6 @@ class _ProfileState extends State<Profile> {
                               fontWeight: FontWeight.bold, fontSize: 18),
                         ),
                         Container(
-                          width: 250,
                           child: Text(
                             _userr.address,
                             style: TextStyle(
