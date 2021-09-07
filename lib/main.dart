@@ -1,7 +1,6 @@
 import 'dart:async';
+//import 'dart:io' show Platform;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:square_in_app_payments/in_app_payments.dart';
-import 'package:square_in_app_payments/models.dart';
 import '../models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -9,6 +8,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'register/authentication.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+// import 'package:square_in_app_payments/models.dart';
+// import 'package:square_in_app_payments/in_app_payments.dart';
+//import 'package:square_in_app_payments/google_pay_constants.dart' as google_pay_constants;
 
 void main() {
   runApp(
@@ -25,6 +27,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  // Future<void> _initSquarePayment() async {
+  //   await InAppPayments.setSquareApplicationId('APPLICATION_ID');
+  // }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -37,51 +42,115 @@ class _MyAppState extends State<MyApp> {
       home: HomePage(),
     );
   }
+// Future<void> _initSquarePayment() async {
 
-  /** 
-  * An event listener to start card entry flow
-  */
-  Future<void> _onStartCardEntryFlow() async {
-    await InAppPayments.startCardEntryFlow(
-        onCardNonceRequestSuccess: _onCardEntryCardNonceRequestSuccess,
-        onCardEntryCancel: _onCancelCardEntryFlow);
-  }
+//       var canUseGooglePay = false;
+//       if(Platform.isAndroid) {
+//         // initialize the google pay with square location id
+//         // use test environment first to quick start
+//         await InAppPayments.initializeGooglePay(
+//           'UK', google_pay_constants.environmentTest);
+//         // always check if google pay supported on that device
+//         // before enable google pay
+//         canUseGooglePay = await InAppPayments.canUseGooglePay;
+//       }
+//       setState(() {
 
-  /**
-  * Callback when card entry is cancelled and UI is closed
-  */
-  void _onCancelCardEntryFlow() {
-    // Handle the cancel callback
-  }
+//         _googlePayEnabled = canUseGooglePay;
 
-  /**
-  * Callback when successfully get the card nonce details for processig
-  * card entry is still open and waiting for processing card nonce details
-  */
-  void _onCardEntryCardNonceRequestSuccess(CardDetails result) async {
-    try {
-      // take payment with the card nonce details
-      // you can take a charge
-      // await chargeCard(result);
+//       });
+//     }
 
-      // payment finished successfully
-      // you must call this method to close card entry
-      // this ONLY apply to startCardEntryFlow, please don't call this method when use startCardEntryFlowWithBuyerVerification
-      InAppPayments.completeCardEntry(
-          onCardEntryComplete: _onCardEntryComplete);
-    } on Exception catch (ex) {
-      // payment failed to complete due to error
-      // notify card entry to show processing error
-      InAppPayments.showCardNonceProcessingError('error');
-    }
-  }
+//   }
+//   void _onStartGooglePay() async {
+//     try {
+//       await InAppPayments.requestGooglePayNonce(
+//         price: '1.00',
+//         currencyCode: 'USD',
+//         onGooglePayNonceRequestSuccess: _onGooglePayNonceRequestSuccess,
+//         onGooglePayNonceRequestFailure: _onGooglePayNonceRequestFailure,
+//         onGooglePayCanceled: _onGooglePayCancel, priceStatus: 1);
+//     } on InAppPaymentsException catch(ex) {
+//       // handle the failure of starting apple pay
+//     }
+//   }
 
-  /**
-  * Callback when the card entry is closed after call 'completeCardEntry'
-  */
-  void _onCardEntryComplete() {
-    // Update UI to notify user that the payment flow is finished successfully
-  }
+//   /**
+//   * Callback when successfully get the card nonce details for processig
+//   * google pay sheet has been closed when this callback is invoked
+//   */
+//   void _onGooglePayNonceRequestSuccess(CardDetails result) async {
+//     try {
+//       // take payment with the card nonce details
+//       // you can take a charge
+//       // await chargeCard(result);
+
+//     } on Exception catch (ex) {
+//       // handle card nonce processing failure
+//     }
+//   }
+
+//   /**
+//   * Callback when google pay is canceled
+//   * google pay sheet has been closed when this callback is invoked
+//   */
+//   void _onGooglePayCancel() {
+//     // handle google pay canceled
+//   }
+
+//   /**
+//   * Callback when failed to get the card nonce
+//   * google pay sheet has been closed when this callback is invoked
+//   */
+//   void _onGooglePayNonceRequestFailure(ErrorInfo errorInfo) {
+//     // handle google pay failure
+//   }
+
+// }
+//   /**
+//   * An event listener to start card entry flow
+//   */
+//   Future<void> _onStartCardEntryFlow() async {
+//     await InAppPayments.startCardEntryFlow(
+//         onCardNonceRequestSuccess: _onCardEntryCardNonceRequestSuccess,
+//         onCardEntryCancel: _onCancelCardEntryFlow);
+//   }
+
+//   /**
+//   * Callback when card entry is cancelled and UI is closed
+//   */
+//   void _onCancelCardEntryFlow() {
+//     // Handle the cancel callback
+//   }
+
+//   /**
+//   * Callback when successfully get the card nonce details for processig
+//   * card entry is still open and waiting for processing card nonce details
+//   */
+//   void _onCardEntryCardNonceRequestSuccess(CardDetails result) async {
+//     try {
+//       // take payment with the card nonce details
+//       // you can take a charge
+//       // await chargeCard(result);
+
+//       // payment finished successfully
+//       // you must call this method to close card entry
+//       // this ONLY apply to startCardEntryFlow, please don't call this method when use startCardEntryFlowWithBuyerVerification
+//       InAppPayments.completeCardEntry(
+//           onCardEntryComplete: _onCardEntryComplete);
+//     } on Exception catch (ex) {
+//       // payment failed to complete due to error
+//       // notify card entry to show processing error
+//       InAppPayments.showCardNonceProcessingError('error');
+//     }
+//   }
+
+//   /**
+//   * Callback when the card entry is closed after call 'completeCardEntry'
+//   */
+//   void _onCardEntryComplete() {
+//     // Update UI to notify user that the payment flow is finished successfully
+//   }
 }
 
 class HomePage extends StatelessWidget {
@@ -271,8 +340,6 @@ class ApplicationState extends ChangeNotifier {
     FirebaseAuth.instance.signOut();
   }
 }
-
-
 
 // Note: To start the payment flow with Strong Customer Authentication,
 //you should call startCardEntryFlowWithBuyerVerification.
