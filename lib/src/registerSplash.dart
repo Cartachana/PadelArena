@@ -1,4 +1,5 @@
 import 'package:cork_padel/main.dart';
+import 'package:cork_padel/view/dash.dart';
 import 'package:flutter/material.dart';
 
 class RegisterSplash extends StatefulWidget {

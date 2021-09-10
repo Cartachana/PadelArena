@@ -1,13 +1,11 @@
 import 'dart:async';
-import 'package:cork_padel/main.dart';
-import 'package:cork_padel/register/user_details.dart';
+import 'package:cork_padel/src/registerSplash.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../view/dash.dart';
 import '../src/widgets.dart';
 import 'package:flutter/services.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/user.dart';
 
 enum ApplicationLoginState {
@@ -16,50 +14,24 @@ enum ApplicationLoginState {
   register,
   password,
   loggedIn,
-  emailNotVerified,
-  detailsNotEntered,
 }
 
 class Authentication extends StatelessWidget {
-  final Userr _userr = Userr();
-
-  Future<void> currentUser() {
-    getDetails();
-    final String _email = _userr.email.toString();
-    return FirebaseFirestore.instance
-        .collection('users')
-        .doc(_email)
-        .get()
-        .then((value) {
-      _userr.name = value.data()!["first_name"].toString();
-      _userr.address = value.data()!["address"].toString();
-      _userr.surname = value.data()!["last_name"].toString();
-      _userr.city = value.data()!["city"].toString();
-      _userr.id = value.data()!["id"].toString();
-      _userr.nif = value.data()!["nif"].toString();
-      _userr.postCode = value.data()!["postal_code"].toString();
-      _userr.role = value.data()!["role"].toString();
-    });
-  }
-
-  Authentication(
-      {required this.loginState,
-      required this.email,
-      required this.startLoginFlow,
-      required this.checkEmail,
-      required this.signInWithEmailAndPassword,
-      required this.cancelRegistration,
-      required this.registerAccount,
-      required this.signOut,
-      required this.getDetails,
-      required this.checkEmailVerified,
-      required this.emailVerified});
+  Authentication({
+    required this.loginState,
+    required this.email,
+    required this.startLoginFlow,
+    required this.checkEmail,
+    required this.signInWithEmailAndPassword,
+    required this.cancelRegistration,
+    required this.registerAccount,
+    required this.signOut,
+    required this.getDetails,
+  });
 
   final ApplicationLoginState loginState;
   final String? email;
   final void Function() startLoginFlow;
-  final Future<void> checkEmailVerified;
-  final bool emailVerified;
   final void Function(
     String email,
     void Function(Exception e) error,
@@ -151,16 +123,9 @@ class Authentication extends StatelessWidget {
           },
           getDetails: getDetails,
         );
-      case ApplicationLoginState.detailsNotEntered:
-        getDetails();
-        return UserDetailsWidget();
-      case ApplicationLoginState.emailNotVerified:
-        return Verify(checkEmailVerified, emailVerified);
       case ApplicationLoginState.loggedIn:
-        {
-          currentUser();
-          return DashWidget();
-        }
+        getDetails();
+        return Dash();
       default:
         return Row(
           children: const [
@@ -304,6 +269,16 @@ class _EmailFormState extends State<EmailForm> {
 }
 
 class PasswordForm extends StatefulWidget {
+  void showToast({
+    required BuildContext context,
+  }) {
+    OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(builder: (context) => ToastWidget());
+    Overlay.of(context)!.insert(overlayEntry);
+    Timer(Duration(seconds: 4), () => overlayEntry.remove());
+  }
+
   const PasswordForm(
       {required this.login,
       required this.email,
@@ -409,7 +384,7 @@ class _PasswordFormState extends State<PasswordForm> {
                         onPrimary: Colors.white,
                       ),
                       child: const Text(
-                        "Seguinte",
+                        "Login",
                         style: TextStyle(fontSize: 15),
                       ),
                       onPressed: () {
@@ -445,6 +420,7 @@ class _PasswordFormState extends State<PasswordForm> {
                                   await FirebaseAuth.instance
                                       .sendPasswordResetEmail(
                                           email: _emailController.text);
+                                  widget.showToast(context: context);
                                 } on FirebaseAuthException catch (er) {
                                   widget.showError(
                                       context, 'Insira o seu email', er);
@@ -478,9 +454,11 @@ class RegisterForm extends StatefulWidget {
 }
 
 class _RegisterFormState extends State<RegisterForm> {
+  Userr _userr = Userr();
   final _formKey = GlobalKey<FormState>(debugLabel: '_RegisterFormState');
   final _emailController = TextEditingController();
   final _displayNameController = TextEditingController();
+  final _displaySurnameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _passController = TextEditingController();
 
@@ -507,12 +485,15 @@ class _RegisterFormState extends State<RegisterForm> {
             ),
           ),
         ),
-        Text(
-          'REGISTO',
-          style: TextStyle(
-            fontFamily: 'Roboto Condensed',
-            fontSize: 26,
-            color: Theme.of(context).primaryColor,
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            'REGISTO',
+            style: TextStyle(
+              fontFamily: 'Roboto Condensed',
+              fontSize: 26,
+              color: Theme.of(context).primaryColor,
+            ),
           ),
         ),
         Padding(
@@ -524,29 +505,72 @@ class _RegisterFormState extends State<RegisterForm> {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.all(10),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor, width: 1.5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 5),
+                          child: TextFormField(
+                            keyboardType: TextInputType.emailAddress,
+                            textInputAction: TextInputAction.next,
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.all(10),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Theme.of(context).primaryColor,
+                                    width: 1.5),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Theme.of(context).primaryColor,
+                                    width: 1.5),
+                              ),
+                              labelText: 'Nome',
+                              // errorText: 'Error Text',
+                            ),
+                            controller: _displayNameController,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Obrigatorio';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor, width: 1.5),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 5),
+                          child: TextFormField(
+                            keyboardType: TextInputType.emailAddress,
+                            textInputAction: TextInputAction.next,
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.all(10),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Theme.of(context).primaryColor,
+                                    width: 1.5),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Theme.of(context).primaryColor,
+                                    width: 1.5),
+                              ),
+                              labelText: 'Sobrenome',
+                              // errorText: 'Error Text',
+                            ),
+                            controller: _displaySurnameController,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Obrigatorio';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
                       ),
-                      labelText: 'Nome',
-                      // errorText: 'Error Text',
-                    ),
-                    controller: _displayNameController,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Obrigatorio';
-                      }
-                      return null;
-                    },
+                    ],
                   ),
                 ),
                 Padding(
@@ -578,7 +602,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 ),
 //---------------------------------------//PASSWORD-------------------------------------------------------------
                 Padding(
-                  padding: EdgeInsets.all(10.0),
+                  padding: EdgeInsets.all(8.0),
                   child: TextFormField(
                     textInputAction: TextInputAction.next,
                     enableSuggestions: false,
@@ -605,7 +629,7 @@ class _RegisterFormState extends State<RegisterForm> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(10.0),
+                  padding: EdgeInsets.all(8.0),
                   child: TextFormField(
                     enableSuggestions: false,
                     autocorrect: false,
@@ -634,32 +658,49 @@ class _RegisterFormState extends State<RegisterForm> {
                   ),
                 ),
                 Container(
-                  width: 150,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).primaryColor,
-                      onPrimary: Colors.white,
-                    ),
-                    child: Text(
-                      "Submeter",
-                      style: TextStyle(fontSize: 15),
-                    ),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        widget.registerAccount(
-                          _emailController.text,
-                          _displayNameController.text,
-                          _passwordController.text,
-                        );
-
-                        ///PROBLEM. IT IS NAVIGATING EVEN IF THE REGISTRATION IS NOT SUCCESSFUL
-                        widget.getDetails();
-                        Navigator.of(context)
-                            .pushReplacement(MaterialPageRoute(builder: (_) {
-                          return UserDetails();
-                        }));
-                      }
-                    },
+                  width: 250,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextButton(
+                            style: TextButton.styleFrom(
+                              primary: Theme.of(context).primaryColor,
+                            ),
+                            child: Text(
+                              "Cancelar",
+                            ),
+                            onPressed: widget.cancel,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            primary: Theme.of(context).primaryColor,
+                            onPrimary: Colors.white,
+                          ),
+                          child: Text(
+                            "Submeter",
+                            style: TextStyle(fontSize: 15),
+                          ),
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              widget.registerAccount(
+                                _emailController.text,
+                                _displayNameController.text,
+                                _passwordController.text,
+                              );
+                              widget.getDetails();
+                              _userr.name = _displayNameController.text;
+                              _userr.surname = _displaySurnameController.text;
+                            }
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 )
               ],
@@ -671,76 +712,28 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 }
 
-class Verify extends StatefulWidget {
-  final Future<void> checkEmailVerified;
-  final bool emailVerified;
-
-  Verify(this.checkEmailVerified, this.emailVerified);
-
-  @override
-  _VerifyState createState() => _VerifyState();
-}
-
-class _VerifyState extends State<Verify> {
-  final auth = FirebaseAuth.instance;
-
-  late Timer timer;
-  late User _user;
-
-  @override
-  void initState() {
-    _user = auth.currentUser!;
-    timer = Timer.periodic(Duration(seconds: 5), (timer) {
-      widget.checkEmailVerified;
-      if (_user.emailVerified) {
-        timer.cancel();
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) {
-          return MyApp();
-        }));
-      }
-    });
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    timer.cancel();
-    super.dispose();
-  }
-
+class ToastWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: Column(
-          children: [
-            Text(
-              'Um email foi enviado para ${_user.email}. Por favor visite a sua caixa de email',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18),
+    return Positioned(
+      top: 100.0,
+      width: MediaQuery.of(context).size.width - 20,
+      left: 10,
+      child: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Material(
+          color: Colors.lime,
+          elevation: 10.0,
+          borderRadius: BorderRadius.circular(10),
+          child: Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: Text(
+              'Email de Recuperacao de Password Enviado',
+              style: TextStyle(
+                fontSize: 16,
+              ),
             ),
-            Text(
-              '\nNao recebeu o email de confirmacao?\n',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18),
-            ),
-            Container(
-              width: 150,
-              child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Theme.of(context).primaryColor,
-                    onPrimary: Colors.white,
-                  ),
-                  child: Text(
-                    "Reenviar",
-                    style: TextStyle(fontSize: 15),
-                  ),
-                  onPressed: () {
-                    _user.sendEmailVerification();
-                  }),
-            )
-          ],
+          ),
         ),
       ),
     );

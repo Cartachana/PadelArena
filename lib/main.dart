@@ -1,6 +1,5 @@
 import 'dart:async';
 //import 'dart:io' show Platform;
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -192,8 +191,6 @@ class HomePage extends StatelessWidget {
                     registerAccount: appState.registerAccount,
                     signOut: appState.signOut,
                     getDetails: appState.getUserDetails,
-                    checkEmailVerified: appState.checkEmailVerified(),
-                    emailVerified: appState.emailVerified,
                   ),
                 ),
               ],
@@ -206,40 +203,18 @@ class HomePage extends StatelessWidget {
 }
 
 class ApplicationState extends ChangeNotifier {
-  late FirebaseAuth auth;
   ApplicationState() {
     init();
   }
 
   Future<void> init() async {
     await Firebase.initializeApp();
-    auth = FirebaseAuth.instance;
-    FirebaseAuth.instance.userChanges().listen((user) async {
+
+    FirebaseAuth.instance.userChanges().listen((user) {
       if (user != null) {
-        if (auth.currentUser!.emailVerified) {
-          _loginState = ApplicationLoginState.loggedIn;
-          //notifyListeners();
-        } else {
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(user.email.toString())
-              .get()
-              .then((onexist) {
-            onexist.exists ? ok = true : ok = false;
-          });
-          if (ok) {
-            _loginState = ApplicationLoginState.emailNotVerified;
-            print('not verif');
-            //notifyListeners();
-          } else {
-            _loginState = ApplicationLoginState.detailsNotEntered;
-            print('no details');
-            //notifyListeners();
-          }
-        }
+        _loginState = ApplicationLoginState.loggedIn;
       } else {
         _loginState = ApplicationLoginState.loggedOut;
-        //notifyListeners();
       }
       notifyListeners();
     });
@@ -247,11 +222,9 @@ class ApplicationState extends ChangeNotifier {
 
   ApplicationLoginState _loginState = ApplicationLoginState.loggedOut;
   ApplicationLoginState get loginState => _loginState;
-
   String? _email;
   String? get email => _email;
   Userr _userr = Userr();
-  bool ok = false;
   User? _user;
   bool emailVerified = false;
 
@@ -265,7 +238,6 @@ class ApplicationState extends ChangeNotifier {
     void Function(FirebaseAuthException e) errorCallback,
   ) async {
     try {
-      await Firebase.initializeApp();
       var methods =
           await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
       if (methods.contains('password')) {
@@ -290,14 +262,14 @@ class ApplicationState extends ChangeNotifier {
         email: email,
         password: password,
       );
-      _user = auth.currentUser;
+      _user = FirebaseAuth.instance.currentUser;
     } on FirebaseAuthException catch (e) {
       errorCallback(e);
     }
   }
 
   void getUserDetails() async {
-    _user = auth.currentUser;
+    _user = FirebaseAuth.instance.currentUser;
     _userr.id = _user!.uid.toString();
     _userr.email = _user!.email.toString();
   }
@@ -319,20 +291,6 @@ class ApplicationState extends ChangeNotifier {
       _userr.email = user.email.toString();
     } on FirebaseAuthException catch (e) {
       errorCallback(e);
-    }
-  }
-
-  Future<void> checkEmailVerified() async {
-    await Firebase.initializeApp();
-    auth = FirebaseAuth.instance;
-    _user = auth.currentUser!;
-
-    await _user!.reload();
-    if (_user!.emailVerified) {
-      emailVerified = true;
-      _loginState = ApplicationLoginState.loggedIn;
-    } else {
-      emailVerified = false;
     }
   }
 

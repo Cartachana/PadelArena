@@ -1,6 +1,6 @@
-import 'package:cork_padel/src/registerSplash.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cork_padel/src/registerSplash.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user.dart';
 
@@ -27,7 +27,7 @@ class _UserDetailsState extends State<UserDetails> {
                   width: 80.0,
                   height: 100.0,
                 ),
-                UserDetailsWidget(),
+                //UserDetailsWidget(),
               ],
             ),
           ),
@@ -35,9 +35,15 @@ class _UserDetailsState extends State<UserDetails> {
   }
 }
 
-class UserDetailsWidget extends StatelessWidget {
-  Userr _userr = Userr();
-  void _saveForm() async {
+class UserDetailsWidget extends StatefulWidget {
+  @override
+  _UserDetailsWidgetState createState() => _UserDetailsWidgetState();
+}
+
+class _UserDetailsWidgetState extends State<UserDetailsWidget> {
+  final Userr _userr = Userr();
+
+  void _saveForm() {
     final isValid = _form.currentState!.validate();
     if (!isValid) {
       return;
@@ -45,13 +51,25 @@ class UserDetailsWidget extends StatelessWidget {
     _form.currentState!.save();
 
     AddUser(_userr.id, _userr.role, _userr.name, _userr.surname, _userr.address,
-            _userr.city, _userr.postCode, _userr.nif, _userr.email)
+            _userr.city, _userr.postCode, _userr.nif)
         .addUser();
 
     //await newUser.addUser();
   }
 
+  final nameController = TextEditingController();
+
+  final surnameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    nameController.text = _userr.name;
+    surnameController.text = _userr.surname;
+  }
+
   final _form = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -84,6 +102,7 @@ class UserDetailsWidget extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: TextFormField(
+                              controller: nameController,
                               textInputAction: TextInputAction.next,
                               decoration: InputDecoration(
                                 contentPadding: EdgeInsets.all(10),
@@ -120,6 +139,7 @@ class UserDetailsWidget extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: TextFormField(
+                              controller: surnameController,
                               textInputAction: TextInputAction.next,
                               decoration: InputDecoration(
                                 contentPadding: EdgeInsets.all(10),
@@ -332,24 +352,23 @@ class AddUser {
   final String _city;
   final String _postCode;
   final String _nif;
-  final String _email;
 
   User? _user;
 
   AddUser(this._id, this._role, this._name, this._surname, this._address,
-      this._city, this._postCode, this._nif, this._email);
+      this._city, this._postCode, this._nif);
 
   CollectionReference users = FirebaseFirestore.instance.collection('users');
 
   Future<void> addUser() {
     _user = FirebaseAuth.instance.currentUser;
     //Call the user's CollectionReference to add a new user
-    return users.doc(_email).set({
+    return users.doc(_user!.email.toString()).set({
       'id': _id,
       'role': 'utilizador',
       'address': _address,
       'city': _city,
-      'email': _email,
+      'email': _user!.email.toString(),
       'first_name': _name,
       'last_name': _surname,
       'nif': _nif,

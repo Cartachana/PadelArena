@@ -1,8 +1,14 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cork_padel/main.dart';
 import 'package:cork_padel/models/menuItem.dart';
 import 'package:cork_padel/models/page.dart';
+import 'package:cork_padel/register/user_details.dart';
 import 'package:cork_padel/view/onlineShop.dart';
 import 'package:cork_padel/view/profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../models/user.dart';
@@ -10,31 +16,92 @@ import './reserve.dart';
 import 'contacts.dart';
 import 'myReservations.dart';
 
-//import 'package:cloud_firestore/cloud_firestore.dart';
+enum UserDetailState {
+  noDetails,
+  notVerified,
+  verified,
+}
 
 class Dash extends StatefulWidget {
+  final Userr _userr = Userr();
   @override
   _DashState createState() => _DashState();
+
+  Future<void> currentUser() {
+    final user = FirebaseAuth.instance.currentUser;
+    final String _email = user!.email.toString();
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(_email)
+        .get()
+        .then((value) {
+      _userr.name = value.data()!["first_name"].toString();
+      _userr.email = value.data()!["email"].toString();
+      _userr.address = value.data()!["address"].toString();
+      _userr.surname = value.data()!["last_name"].toString();
+      _userr.city = value.data()!["city"].toString();
+      _userr.id = value.data()!["id"].toString();
+      _userr.nif = value.data()!["nif"].toString();
+      _userr.postCode = value.data()!["postal_code"].toString();
+      _userr.role = value.data()!["role"].toString();
+    });
+  }
 }
 
 class _DashState extends State<Dash> {
+  UserDetailState _userState = UserDetailState.noDetails;
+  UserDetailState get loginState => _userState;
+
+  @override
+  void initState() {
+    checkMore();
+    super.initState();
+  }
+
+  Future<void> checkMore() async {
+    await Firebase.initializeApp();
+
+    final auth = FirebaseAuth.instance;
+    FirebaseAuth.instance.userChanges().listen((user) async {
+      if (user != null) {
+        if (auth.currentUser!.emailVerified) {
+          setState(() {
+            _userState = UserDetailState.verified;
+          });
+
+          widget.currentUser();
+        } else {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.email)
+              .get()
+              .then((onexist) {
+            if (onexist.exists) {
+              setState(() {
+                _userState = UserDetailState.notVerified;
+              });
+            } else {
+              setState(() {
+                _userState = UserDetailState.noDetails;
+              });
+            }
+          });
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        title: Text("Cork Padel Arena"),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-      body: SingleChildScrollView(
+    return Container(
+      child: SingleChildScrollView(
         child: Column(
           children: [
-            Image.asset(
-              'assets/images/logo.png',
-              width: 80.0,
-              height: 100.0,
-            ),
-            DashWidget()
+            _userState == UserDetailState.verified
+                ? DashWidget()
+                : _userState == UserDetailState.notVerified
+                    ? Verify()
+                    : UserDetailsWidget()
           ],
         ),
       ),
@@ -58,7 +125,7 @@ class _DashWidgetState extends State<DashWidget> {
     if (await canLaunch(url)) {
       await launch(
         url,
-        forceWebView: false,
+        //forceWebView: false,
         //headers: <String, String>{'my_header_key': 'my_header_value'},
       );
     } else {
@@ -82,40 +149,44 @@ class _DashWidgetState extends State<DashWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        margin: EdgeInsets.all(5),
-        width: double.infinity,
-        height: 500,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: Text(
-                'Ola ' + _userr.name,
-                style: TextStyle(
-                  fontFamily: 'Roboto Condensed',
-                  fontSize: 26,
-                  color: Theme.of(context).primaryColor,
+    return Column(
+      children: [
+        Container(
+            margin: EdgeInsets.all(5),
+            width: double.infinity,
+            height: 500,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Text(
+                    'Ola ${_userr.name}',
+                    style: TextStyle(
+                      fontFamily: 'Roboto Condensed',
+                      fontSize: 26,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            Expanded(
-              child: GridView(
-                padding: const EdgeInsets.all(5),
-                children: menus
-                    .map((menus) => MenuItem(
-                        menus.ikon, menus.title, menus.color, menus.fun))
-                    .toList(),
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 200,
-                    childAspectRatio: 3 / 2,
-                    crossAxisSpacing: 20,
-                    mainAxisSpacing: 20),
-              ),
-            ),
-            FutureBuilder<void>(future: _launched, builder: _launchStatus)
-          ],
-        ));
+                Expanded(
+                  child: GridView(
+                    padding: const EdgeInsets.all(5),
+                    children: menus
+                        .map((menus) => MenuItem(
+                            menus.ikon, menus.title, menus.color, menus.fun))
+                        .toList(),
+                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 200,
+                        childAspectRatio: 3 / 2,
+                        crossAxisSpacing: 20,
+                        mainAxisSpacing: 20),
+                  ),
+                ),
+                FutureBuilder<void>(future: _launched, builder: _launchStatus)
+              ],
+            )),
+      ],
+    );
   }
 
   var menus = [
@@ -195,76 +266,90 @@ class _DashWidgetState extends State<DashWidget> {
         'Logout',
         Colors.lime, (BuildContext ctx) {
       FirebaseAuth.instance.signOut();
+      Navigator.of(
+        ctx,
+      ).pushReplacement(MaterialPageRoute(builder: (ctx) {
+        return MyApp();
+      }));
     })
   ];
 }
 
-// class DashWidget extends StatelessWidget {
-//   Userr _userr = Userr();
+class Verify extends StatefulWidget {
+  late bool emailVerified;
+  final _user = FirebaseAuth.instance.currentUser!;
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//         margin: EdgeInsets.all(20),
-//         width: double.infinity,
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.center,
-//           children: [
-//             Text(
-//               'Ola ' + _userr.name,
-//               style: TextStyle(
-//                 fontFamily: 'Roboto Condensed',
-//                 fontSize: 26,
-//                 color: Theme.of(context).primaryColor,
-//               ),
-//             ),
-//             Padding(
-//               padding: const EdgeInsets.all(8),
-//               child: ElevatedButton(
-//                 style: ElevatedButton.styleFrom(
-//                   primary: Theme.of(context).primaryColor,
-//                   onPrimary: Colors.white,
-//                 ),
-//                 child: const Text(
-//                   "Reservas",
-//                   style: TextStyle(fontSize: 15),
-//                 ),
-//                 onPressed: () {
-//                   Navigator.of(
-//                     context,
-//                   ).push(MaterialPageRoute(builder: (_) {
-//                     return Reserve();
-//                   }));
-//                 },
-//               ),
-//             ),
-//             Row(
-//               mainAxisAlignment: MainAxisAlignment.center,
-//               children: [
-//                 Padding(
-//                   padding: const EdgeInsets.all(8),
-//                   child: ElevatedButton(
-//                     style: ElevatedButton.styleFrom(
-//                       primary: Theme.of(context).primaryColor,
-//                       onPrimary: Colors.white,
-//                     ),
-//                     child: const Text(
-//                       "Logout",
-//                       style: TextStyle(fontSize: 15),
-//                     ),
-//                     onPressed: () async {
-//                       FirebaseAuth.instance.signOut();
-//                       Navigator.of(
-//                         context,
-//                       ).push(MaterialPageRoute(builder: (_) {
-//                         return MyApp();
-//                       }));
-//                     },
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ],
-//         ));
-//   }
-// }
+  Future<void> checkEmailVerified() async {
+    await _user.reload();
+    if (_user.emailVerified) {
+      emailVerified = true;
+    } else {
+      emailVerified = false;
+    }
+  }
+
+  @override
+  _VerifyState createState() => _VerifyState();
+}
+
+class _VerifyState extends State<Verify> {
+  late Timer timer;
+
+  @override
+  void initState() {
+    timer = Timer.periodic(Duration(seconds: 5), (timer) {
+      widget.checkEmailVerified();
+      if (widget._user.emailVerified) {
+        timer.cancel();
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) {
+          return Dash();
+        }));
+      }
+    });
+
+    super.initState();
+  }
+
+  // @override
+  // void dispose() {
+  //   timer.cancel();
+  //   super.dispose();
+  // }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Center(
+        child: Column(
+          children: [
+            Text(
+              'Um email foi enviado para ${widget._user.email}. Por favor visite a sua caixa de email',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18),
+            ),
+            Text(
+              '\nNao recebeu o email de confirmacao?\n',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18),
+            ),
+            Container(
+              width: 150,
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Theme.of(context).primaryColor,
+                    onPrimary: Colors.white,
+                  ),
+                  child: Text(
+                    "Reenviar",
+                    style: TextStyle(fontSize: 15),
+                  ),
+                  onPressed: () {
+                    widget._user.sendEmailVerification();
+                  }),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
