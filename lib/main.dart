@@ -12,8 +12,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 //import 'package:square_in_app_payments/google_pay_constants.dart' as google_pay_constants;
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  //WidgetsFlutterBinding.ensureInitialized();
+  //await Firebase.initializeApp();
   runApp(
     ChangeNotifierProvider(
       create: (context) => ApplicationState(),

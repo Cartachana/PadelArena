@@ -50,8 +50,8 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
     }
     _form.currentState!.save();
 
-    AddUser(_userr.id, _userr.role, _userr.name, _userr.surname, _userr.address,
-            _userr.city, _userr.postCode, _userr.nif)
+    AddUser(_userr.id, _userr.name, _userr.surname, _userr.address, _userr.city,
+            _userr.postCode, _userr.nif)
         .addUser();
 
     //await newUser.addUser();
@@ -345,7 +345,6 @@ class _UserDetailsWidgetState extends State<UserDetailsWidget> {
 
 class AddUser {
   final String _id;
-  final String _role;
   final String _name;
   final String _surname;
   final String _address;
@@ -355,8 +354,8 @@ class AddUser {
 
   User? _user;
 
-  AddUser(this._id, this._role, this._name, this._surname, this._address,
-      this._city, this._postCode, this._nif);
+  AddUser(this._id, this._name, this._surname, this._address, this._city,
+      this._postCode, this._nif);
 
   CollectionReference users = FirebaseFirestore.instance.collection('users');
 
@@ -372,7 +371,7 @@ class AddUser {
       'first_name': _name,
       'last_name': _surname,
       'nif': _nif,
-      'postal_code': _postCode
+      'postal_code': _postCode,
     }).then((value) {
       print("User Added");
 

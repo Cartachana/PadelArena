@@ -1,4 +1,4 @@
-import 'package:cork_padel/src/registerSplash.dart';
+import '../src/profileUpdatedSplash.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -27,7 +27,7 @@ class _EditDetailsState extends State<EditDetails> {
                   width: 80.0,
                   height: 100.0,
                 ),
-                UserDetailsWidget(),
+                EditDetailsWidget(),
               ],
             ),
           ),
@@ -35,7 +35,12 @@ class _EditDetailsState extends State<EditDetails> {
   }
 }
 
-class UserDetailsWidget extends StatelessWidget {
+class EditDetailsWidget extends StatefulWidget {
+  @override
+  State<EditDetailsWidget> createState() => _EditDetailsWidgetState();
+}
+
+class _EditDetailsWidgetState extends State<EditDetailsWidget> {
   Userr _userr = Userr();
 
   void _saveForm() async {
@@ -45,14 +50,33 @@ class UserDetailsWidget extends StatelessWidget {
     }
     _form.currentState!.save();
 
-    AddUser(_userr.id, _userr.role, _userr.name, _userr.surname, _userr.address,
-            _userr.city, _userr.postCode, _userr.nif, _userr.email)
+    AddUser(_userr.id, _userr.name, _userr.surname, _userr.address, _userr.city,
+            _userr.postCode, _userr.nif, _userr.email)
         .addUser();
 
     //await newUser.addUser();
   }
 
+  final nameController = TextEditingController();
+  final surnameController = TextEditingController();
+  final addressController = TextEditingController();
+  final postCodeController = TextEditingController();
+  final cityController = TextEditingController();
+  final nifController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    nameController.text = _userr.name;
+    surnameController.text = _userr.surname;
+    addressController.text = _userr.address;
+    postCodeController.text = _userr.postCode;
+    cityController.text = _userr.city;
+    nifController.text = _userr.nif;
+  }
+
   final _form = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -85,6 +109,7 @@ class UserDetailsWidget extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: TextFormField(
+                              controller: nameController,
                               textInputAction: TextInputAction.next,
                               decoration: InputDecoration(
                                 contentPadding: EdgeInsets.all(10),
@@ -121,6 +146,7 @@ class UserDetailsWidget extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: TextFormField(
+                              controller: surnameController,
                               textInputAction: TextInputAction.next,
                               decoration: InputDecoration(
                                 contentPadding: EdgeInsets.all(10),
@@ -156,6 +182,7 @@ class UserDetailsWidget extends StatelessWidget {
                   padding: const EdgeInsets.all(10.0),
                   child: TextFormField(
                     textInputAction: TextInputAction.next,
+                    controller: addressController,
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.all(10),
                       focusedBorder: OutlineInputBorder(
@@ -189,6 +216,7 @@ class UserDetailsWidget extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: TextFormField(
+                          controller: cityController,
                           textInputAction: TextInputAction.next,
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.all(10),
@@ -223,6 +251,7 @@ class UserDetailsWidget extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: TextFormField(
+                          controller: postCodeController,
                           textInputAction: TextInputAction.next,
                           keyboardType:
                               TextInputType.numberWithOptions(decimal: true),
@@ -259,6 +288,7 @@ class UserDetailsWidget extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: TextFormField(
+                    controller: nifController,
                     textInputAction: TextInputAction.next,
                     keyboardType:
                         TextInputType.numberWithOptions(decimal: true),
@@ -308,8 +338,8 @@ class UserDetailsWidget extends StatelessWidget {
                       if (isValid) {
                         Navigator.of(
                           context,
-                        ).push(MaterialPageRoute(builder: (_) {
-                          return RegisterSplash();
+                        ).pushReplacement(MaterialPageRoute(builder: (_) {
+                          return ProfileUpdatedSplash();
                         }));
                       }
                     },
@@ -326,7 +356,6 @@ class UserDetailsWidget extends StatelessWidget {
 
 class AddUser {
   final String _id;
-  final String _role;
   final String _name;
   final String _surname;
   final String _address;
@@ -337,8 +366,8 @@ class AddUser {
 
   User? _user = FirebaseAuth.instance.currentUser;
 
-  AddUser(this._id, this._role, this._name, this._surname, this._address,
-      this._city, this._postCode, this._nif, this._email);
+  AddUser(this._id, this._name, this._surname, this._address, this._city,
+      this._postCode, this._nif, this._email);
 
   CollectionReference users = FirebaseFirestore.instance.collection('users');
 
@@ -356,8 +385,6 @@ class AddUser {
       'postal_code': _postCode
     }).then((value) {
       print("User Added");
-
-      _user!.sendEmailVerification();
     }).catchError((error) => print("Failed to add user: $error"));
   }
 }

@@ -1,6 +1,8 @@
 import 'package:cork_padel/models/user.dart';
 import 'package:flutter/material.dart';
 
+import 'editDetails.dart';
+
 class Profile extends StatefulWidget {
   @override
   _ProfileState createState() => _ProfileState();
@@ -160,7 +162,13 @@ class _ProfileState extends State<Profile> {
                         "Editar Perfil",
                         style: TextStyle(fontSize: 15),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(
+                          context,
+                        ).push(MaterialPageRoute(builder: (_) {
+                          return EditDetails();
+                        }));
+                      },
                     ),
                   ),
                   Container(

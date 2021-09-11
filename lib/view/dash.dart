@@ -65,7 +65,9 @@ class _DashState extends State<Dash> {
     FirebaseAuth.instance.userChanges().listen((user) async {
       if (user != null) {
         if (auth.currentUser!.emailVerified) {
-          _userState = UserDetailState.verified;
+          setState(() {
+            _userState = UserDetailState.verified;
+          });
 
           widget.currentUser();
         } else {
@@ -75,9 +77,13 @@ class _DashState extends State<Dash> {
               .get()
               .then((onexist) {
             if (onexist.exists) {
-              _userState = UserDetailState.notVerified;
+              setState(() {
+                _userState = UserDetailState.notVerified;
+              });
             } else {
-              _userState = UserDetailState.noDetails;
+              setState(() {
+                _userState = UserDetailState.noDetails;
+              });
             }
           });
         }
@@ -93,19 +99,18 @@ class _DashState extends State<Dash> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            _userState == UserDetailState.verified
-                ? DashWidget()
-                : (_userState == UserDetailState.notVerified
-                    ? Verify()
-                    : UserDetailsWidget())
-          ],
-        ),
-      ),
-    );
+    switch (_userState) {
+      case UserDetailState.verified:
+        return DashWidget();
+      case UserDetailState.notVerified:
+        return Verify();
+      case UserDetailState.noDetails:
+        return UserDetailsWidget();
+      default:
+        return Row(children: const [
+          Text("Internal error, this shouldn't happen..."),
+        ]);
+    }
   }
 }
 
@@ -166,7 +171,7 @@ class _DashWidgetState extends State<DashWidget> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: Text(
-                    'Ola ' + myName,
+                    'Bem-Vindo ' + myName,
                     style: TextStyle(
                       fontFamily: 'Roboto Condensed',
                       fontSize: 26,
