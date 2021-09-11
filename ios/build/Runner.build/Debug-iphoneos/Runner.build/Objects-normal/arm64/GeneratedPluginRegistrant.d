@@ -1,0 +1,23 @@
+dependencies: \
+  /Users/apple/Documents/Development/Projects/cork_padel/ios/Runner/GeneratedPluginRegistrant.m \
+  /Users/apple/Documents/Development/Projects/cork_padel/ios/Runner/GeneratedPluginRegistrant.h \
+  /Users/apple/Documents/Development/Projects/cork_padel/ios/build/Debug-iphoneos/Flutter.framework/Modules/module.modulemap \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.5.sdk/usr/include/mach-o/compact_unwind_encoding.modulemap \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.5.sdk/usr/include/mach-o/dyld.modulemap \
+  /Users/apple/Documents/Development/Projects/cork_padel/ios/Pods/Firebase/CoreOnly/Sources/module.modulemap \
+  /Users/apple/Documents/Development/Projects/cork_padel/ios/build/Debug-iphoneos/Flutter.framework/Headers/FlutterViewController.h \
+  /Users/apple/Documents/Development/Projects/cork_padel/ios/build/Debug-iphoneos/Flutter.framework/Headers/FlutterPluginAppLifeCycleDelegate.h \
+  /Users/apple/Documents/Development/Projects/cork_padel/ios/build/Debug-iphoneos/Flutter.framework/Headers/FlutterHeadlessDartRunner.h \
+  /Users/apple/Documents/Development/Projects/cork_padel/ios/build/Debug-iphoneos/Flutter.framework/Headers/FlutterEngineGroup.h \
+  /Users/apple/Documents/Development/Projects/cork_padel/ios/build/Debug-iphoneos/Flutter.framework/Headers/FlutterEngine.h \
+  /Users/apple/Documents/Development/Projects/cork_padel/ios/build/Debug-iphoneos/Flutter.framework/Headers/FlutterDartProject.h \
+  /Users/apple/Documents/Development/Projects/cork_padel/ios/build/Debug-iphoneos/Flutter.framework/Headers/FlutterCallbackCache.h \
+  /Users/apple/Documents/Development/Projects/cork_padel/ios/build/Debug-iphoneos/Flutter.framework/Headers/FlutterTexture.h \
+  /Users/apple/Documents/Development/Projects/cork_padel/ios/build/Debug-iphoneos/Flutter.framework/Headers/FlutterPlatformViews.h \
+  /Users/apple/Documents/Development/Projects/cork_padel/ios/build/Debug-iphoneos/Flutter.framework/Headers/FlutterCodecs.h \
+  /Users/apple/Documents/Development/Projects/cork_padel/ios/build/Debug-iphoneos/Flutter.framework/Headers/FlutterChannels.h \
+  /Users/apple/Documents/Development/Projects/cork_padel/ios/build/Debug-iphoneos/Flutter.framework/Headers/FlutterBinaryMessenger.h \
+  /Users/apple/Documents/Development/Projects/cork_padel/ios/build/Debug-iphoneos/Flutter.framework/Headers/FlutterPlugin.h \
+  /Users/apple/Documents/Development/Projects/cork_padel/ios/build/Debug-iphoneos/Flutter.framework/Headers/FlutterMacros.h \
+  /Users/apple/Documents/Development/Projects/cork_padel/ios/build/Debug-iphoneos/Flutter.framework/Headers/FlutterAppDelegate.h \
+  /Users/apple/Documents/Development/Projects/cork_padel/ios/build/Debug-iphoneos/Flutter.framework/Headers/Flutter.h

@@ -537,6 +537,7 @@ DEPENDENCIES:
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - Firebase/Analytics
   - Firebase/Auth
+  - Firebase/Database
   - Firebase/Firestore
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
@@ -547,7 +548,6 @@ DEPENDENCIES:
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - pay_ios (from `.symlinks/plugins/pay_ios/ios`)
   - square_in_app_payments (from `.symlinks/plugins/square_in_app_payments/ios`)
-  - SquareInAppPaymentsSDK
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
 
 SPEC REPOS:
@@ -640,6 +640,6 @@ SPEC CHECKSUMS:
   SquareInAppPaymentsSDK: 6c3293e5600c121bbdc5499ffa3b3976e2cf0054
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
 
-PODFILE CHECKSUM: 88eb57b5f66d77177dacefa3d40fd9e69bfeaef3
+PODFILE CHECKSUM: 2e924b11dded06f5d68022cfbd4bb997829fbf74
 
 COCOAPODS: 1.11.0
