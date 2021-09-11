@@ -1,5 +1,5 @@
 # Uncomment this line to define a global platform for your project
-platform :ios, '12.0'
+platform :ios, '10.0'
  pod 'Firebase/Analytics'
 
  # For Analytics without IDFA collection capability, use this pod instead
@@ -9,10 +9,10 @@ platform :ios, '12.0'
  # For example, to use Firebase Authentication and Cloud Firestore
  pod 'Firebase/Auth'
  pod 'Firebase/Firestore'
-
+ pod 'Firebase/Database'	
+ 
  use_frameworks!
 
-pod "SquareInAppPaymentsSDK"
 
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
