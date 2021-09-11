@@ -37,6 +37,7 @@ class _EditDetailsState extends State<EditDetails> {
 
 class UserDetailsWidget extends StatelessWidget {
   Userr _userr = Userr();
+
   void _saveForm() async {
     final isValid = _form.currentState!.validate();
     if (!isValid) {
@@ -63,7 +64,7 @@ class UserDetailsWidget extends StatelessWidget {
         //mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           Text(
-            'DADOS PESSOAIS',
+            'EDITAR DADOS',
             style: TextStyle(
               fontFamily: 'Roboto Condensed',
               fontSize: 26,

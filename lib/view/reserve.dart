@@ -466,7 +466,7 @@ class _ReserveState extends State<Reserve> {
                               ),
                             );
                           }
-                          return Text('');
+                          return Text('Ainda nao existem reservas neste dia');
                         })
                     : SizedBox(),
               ],

@@ -65,9 +65,7 @@ class _DashState extends State<Dash> {
     FirebaseAuth.instance.userChanges().listen((user) async {
       if (user != null) {
         if (auth.currentUser!.emailVerified) {
-          setState(() {
-            _userState = UserDetailState.verified;
-          });
+          _userState = UserDetailState.verified;
 
           widget.currentUser();
         } else {
@@ -77,18 +75,20 @@ class _DashState extends State<Dash> {
               .get()
               .then((onexist) {
             if (onexist.exists) {
-              setState(() {
-                _userState = UserDetailState.notVerified;
-              });
+              _userState = UserDetailState.notVerified;
             } else {
-              setState(() {
-                _userState = UserDetailState.noDetails;
-              });
+              _userState = UserDetailState.noDetails;
             }
           });
         }
       }
     });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -99,9 +99,9 @@ class _DashState extends State<Dash> {
           children: [
             _userState == UserDetailState.verified
                 ? DashWidget()
-                : _userState == UserDetailState.notVerified
+                : (_userState == UserDetailState.notVerified
                     ? Verify()
-                    : UserDetailsWidget()
+                    : UserDetailsWidget())
           ],
         ),
       ),
@@ -116,7 +116,7 @@ class DashWidget extends StatefulWidget {
 
 class _DashWidgetState extends State<DashWidget> {
   Userr _userr = Userr();
-
+  var myName;
   Future<void>? _launched;
 
   var _url = 'https://www.corkpadel.pt/en/store';
@@ -131,6 +131,12 @@ class _DashWidgetState extends State<DashWidget> {
     } else {
       throw 'Could not launch $url';
     }
+  }
+
+  @override
+  void initState() {
+    myName = _userr.name;
+    super.initState();
   }
 
   void setIt() {
@@ -160,7 +166,7 @@ class _DashWidgetState extends State<DashWidget> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: Text(
-                    'Ola ${_userr.name}',
+                    'Ola ' + myName,
                     style: TextStyle(
                       fontFamily: 'Roboto Condensed',
                       fontSize: 26,
@@ -301,9 +307,7 @@ class _VerifyState extends State<Verify> {
       widget.checkEmailVerified();
       if (widget._user.emailVerified) {
         timer.cancel();
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) {
-          return Dash();
-        }));
+        Navigator.of(context).pop();
       }
     });
 
