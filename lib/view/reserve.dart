@@ -446,12 +446,12 @@ class _ReserveState extends State<Reserve> {
                               tilesList
                                   .addAll(reservations.map((nextReservation) {
                                 return ListTile(
-                                    leading: Icon(Icons.lock_clock),
-                                    title: Text('Das ' +
-                                        nextReservation.hour +
-                                        ' as ' +
-                                        nextReservation.duration),
-                                    subtitle: Text(nextReservation.state));
+                                  leading: Icon(Icons.lock_clock),
+                                  title: Text('Das ' +
+                                      nextReservation.hour +
+                                      ' as ' +
+                                      nextReservation.duration),
+                                );
                               }));
                             } catch (e) {
                               return Text(

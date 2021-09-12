@@ -1,7 +1,7 @@
 import 'package:cork_padel/models/user.dart';
 import 'package:flutter/material.dart';
-
 import 'editDetails.dart';
+import 'myReservations.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -9,6 +9,11 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   Userr _userr = Userr();
   static const double _padd = 15.0;
 
@@ -182,7 +187,13 @@ class _ProfileState extends State<Profile> {
                         "Minhas Reservas",
                         style: TextStyle(fontSize: 15),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(
+                          context,
+                        ).push(MaterialPageRoute(builder: (_) {
+                          return MyReservations();
+                        }));
+                      },
                     ),
                   ),
                 ],

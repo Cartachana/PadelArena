@@ -1,14 +1,14 @@
 import 'dart:async';
-
+import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cork_padel/main.dart';
 import 'package:cork_padel/models/menuItem.dart';
 import 'package:cork_padel/models/page.dart';
 import 'package:cork_padel/register/user_details.dart';
-import 'package:cork_padel/view/onlineShop.dart';
 import 'package:cork_padel/view/profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../models/user.dart';
@@ -116,10 +116,10 @@ class _DashState extends State<Dash> {
 
 class DashWidget extends StatefulWidget {
   @override
-  _DashWidgetState createState() => _DashWidgetState();
+  DashWidgetState createState() => DashWidgetState();
 }
 
-class _DashWidgetState extends State<DashWidget> {
+class DashWidgetState extends State<DashWidget> {
   Userr _userr = Userr();
   var myName;
   Future<void>? _launched;
@@ -130,17 +130,40 @@ class _DashWidgetState extends State<DashWidget> {
     if (await canLaunch(url)) {
       await launch(
         url,
-        //forceWebView: false,
-        //headers: <String, String>{'my_header_key': 'my_header_value'},
       );
     } else {
       throw 'Could not launch $url';
     }
   }
 
+  void deleteOldReservations() {
+    final reservations =
+        FirebaseDatabase.instance.reference().child('reservations/');
+    final DateTime today = DateTime.now();
+    final formatter = DateFormat('dd/MM/yyyy HH:mm');
+    reservations.onValue.listen((event) {
+      if (event.snapshot.value != null) {
+        final reservation = Map<String, dynamic>.from(event.snapshot.value);
+        reservation.forEach((key, value) {
+          final String whenMade = value['dateMade'] + ' ' + value['timeMade'];
+          final DateTime dbDay = formatter.parse(whenMade);
+
+          if (today.isAfter(dbDay.add(Duration(minutes: 31))) &&
+              value['state'] == 'por completar') {
+            reservations.child(key).remove();
+          }
+        });
+      }
+    });
+  }
+
+  late Timer timer;
   @override
   void initState() {
     myName = _userr.name;
+    timer = Timer.periodic(Duration(seconds: 5), (timer) {
+      deleteOldReservations();
+    });
     super.initState();
   }
 
@@ -225,18 +248,18 @@ class _DashWidgetState extends State<DashWidget> {
         }));
       },
     ),
-    // Pages(
-    //   Icon(Icons.perm_contact_calendar, size: 50),
-    //   'Minhas Reservas',
-    //   Colors.lime,
-    //   (BuildContext ctx) {
-    //     Navigator.of(
-    //       ctx,
-    //     ).push(MaterialPageRoute(builder: (_) {
-    //       return MyReservations();
-    //     }));
-    //   },
-    // ),
+    Pages(
+      Icon(Icons.perm_contact_calendar, size: 50),
+      'Minhas Reservas',
+      Colors.lime,
+      (BuildContext ctx) {
+        Navigator.of(
+          ctx,
+        ).push(MaterialPageRoute(builder: (_) {
+          return MyReservations();
+        }));
+      },
+    ),
     Pages(
         Icon(
           Icons.phone,

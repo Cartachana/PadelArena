@@ -41,8 +41,18 @@ class _ShoppingCartState extends State<ShoppingCart> {
                   builder: (context, snapshot) {
                     final tilesList = <Card>[];
                     if (snapshot.hasData) {
+                      List reservations = snapshot.data as List<Reservation>;
+                      int i = 0;
+                      do {
+                        if (reservations.isNotEmpty) {
+                          if (reservations[i].userEmail != _user.email) {
+                            reservations.removeAt(i);
+                            i = i;
+                          } else
+                            i++;
+                        }
+                      } while (i < reservations.length);
                       try {
-                        final reservations = snapshot.data as List<Reservation>;
                         tilesList.addAll(reservations.map((nextReservation) {
                           if (_user.email == nextReservation.userEmail &&
                               nextReservation.state == 'por completar') {

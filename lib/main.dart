@@ -1,5 +1,4 @@
 import 'dart:async';
-//import 'dart:io' show Platform;
 import '../models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
