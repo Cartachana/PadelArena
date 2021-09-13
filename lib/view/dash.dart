@@ -148,7 +148,7 @@ class DashWidgetState extends State<DashWidget> {
           final String whenMade = value['dateMade'] + ' ' + value['timeMade'];
           final DateTime dbDay = formatter.parse(whenMade);
 
-          if (today.isAfter(dbDay.add(Duration(minutes: 31))) &&
+          if (today.isAfter(dbDay.add(Duration(minutes: 30))) &&
               value['state'] == 'por completar') {
             reservations.child(key).remove();
           }

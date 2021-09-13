@@ -91,6 +91,23 @@ class _MyReservationsState extends State<MyReservations> {
                     ),
                   ]),
                 ),
+                complete
+                    ? Text(
+                        'Completas',
+                        style: TextStyle(
+                          fontFamily: 'Roboto Condensed',
+                          fontSize: 20,
+                          color: Colors.lime,
+                        ),
+                      )
+                    : Text(
+                        'Por Completar',
+                        style: TextStyle(
+                          fontFamily: 'Roboto Condensed',
+                          fontSize: 20,
+                          color: Colors.lime,
+                        ),
+                      ),
                 StreamBuilder(
                     stream: ReservationStreamPublisher().getReservationStream(),
                     builder: (context, snapshot) {
