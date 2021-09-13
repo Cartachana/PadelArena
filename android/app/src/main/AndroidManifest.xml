@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="pt.cork_padel_arena.test">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="pt.corkpadelarena.test">
 
     <queries>
       <intent>
@@ -20,8 +21,9 @@
     <uses-sdk android:minSdkVersion="19"/>
    
    <application
-        android:label="cork_padel"
-        android:icon="@mipmap/logo">
+        android:label="corkpadel"
+        android:icon="@mipmap/logo"
+        tools:replace="android:label">
         
         <activity
             android:name="pt.cork_padel_arena.test.MainActivity"
@@ -58,6 +60,17 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
+          android:launchMode="singleTask"
+          android:exported="true">
+          <intent-filter>
+              <action android:name="android.intent.action.VIEW"/>
+              <data android:scheme="pt.corkpadelarena.test.braintree" />
+              <category android:name="android.intent.category.DEFAULT"/>
+              <category android:name="android.intent.category.BROWSABLE"/>
+          </intent-filter>
+        </activity>
+
         <activity android:name="io.flutter.plugins.urllauncher.WebViewActivity" android:theme="@android:style/Theme.NoTitleBar.Fullscreen" android:exported="false"/>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

@@ -119,13 +119,13 @@ class _ShoppingCartState extends State<ShoppingCart> {
                         style: TextStyle(fontSize: 15),
                       ),
                       onPressed: () {
-                        // Navigator.of(
-                        //   context,
-                        // ).push(
-                        //   MaterialPageRoute(builder: (_) {
-                        //     return Checkout();
-                        //   }),
-                        // );
+                        Navigator.of(
+                          context,
+                        ).push(
+                          MaterialPageRoute(builder: (_) {
+                            return Checkout();
+                          }),
+                        );
                       }))
             ],
           ),

@@ -48,11 +48,6 @@ class _ProfileState extends State<Profile> {
               padding:
                   EdgeInsets.only(left: 15, top: 50, right: 15, bottom: 15),
               decoration: BoxDecoration(
-                // gradient: LinearGradient(
-                //   colors: [Colors.lime, Colors.lime.withOpacity(0.5)],
-                //   begin: Alignment.topLeft,
-                //   end: Alignment.bottomRight,
-                // ),
                 borderRadius: BorderRadius.circular(15),
               ),
               margin: EdgeInsets.all(10),
