@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_braintree/flutter_braintree.dart';
+import 'package:http/http.dart' as http;
 
 class Checkout extends StatefulWidget {
   @override
@@ -7,6 +10,8 @@ class Checkout extends StatefulWidget {
 }
 
 class _CheckoutState extends State<Checkout> {
+  var url =
+      'https://us-central1-corkpadel-arena-eb47b.cloudfunctions.net/paypalPayment';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,6 +61,12 @@ class _CheckoutState extends State<Checkout> {
                 if (result != null) {
                   print(result.paymentMethodNonce.description);
                   print(result.paymentMethodNonce.nonce);
+
+                  final http.Response response = await http.post(Uri.parse(
+                      '$url?payment_method_nonce=${result.paymentMethodNonce.nonce}&device_data=${result.deviceData}'));
+
+                  final payResult = jsonDecode(response.body);
+                  if (payResult['result'] == 'success') print('payment done');
                 }
               },
             ),

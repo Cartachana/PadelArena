@@ -28,7 +28,7 @@ def keystoreProperties = new Properties()
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
-apply plugin: 'com.google.gms.google-services'
+
 
 android {
     compileSdkVersion 31
@@ -39,7 +39,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "pt.cork_padel_arena.test"
+        applicationId "pt.corkpadelarena.test"
         minSdkVersion 21
         targetSdkVersion 30
         
