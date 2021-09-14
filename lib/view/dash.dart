@@ -49,7 +49,7 @@ class Dash extends StatefulWidget {
 }
 
 class _DashState extends State<Dash> {
-  UserDetailState _userState = UserDetailState.noDetails;
+  UserDetailState _userState = UserDetailState.verified;
   UserDetailState get loginState => _userState;
 
   @override

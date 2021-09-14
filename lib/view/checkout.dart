@@ -11,7 +11,7 @@ class Checkout extends StatefulWidget {
 
 class _CheckoutState extends State<Checkout> {
   var url =
-      'https://us-central1-corkpadel-arena-eb47b.cloudfunctions.net/paypalPayment';
+      'https://us-central1-corkpadel-arena-eb47b.cloudfunctions.net/corkArenas';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,30 +49,35 @@ class _CheckoutState extends State<Checkout> {
                 style: TextStyle(fontSize: 15),
               ),
               onPressed: () async {
-                var request = BraintreeDropInRequest(
-                    tokenizationKey: 'sandbox_pg7cvyzn_5zmrfhddbdxxmt33',
-                    collectDeviceData: true,
-                    paypalRequest: BraintreePayPalRequest(
-                        amount: '1.00', displayName: 'Marco'),
-                    cardEnabled: true);
+                // CODE FOR PAYPAL
+                // var request = BraintreeDropInRequest(
+                //     tokenizationKey: 'sandbox_pg7cvyzn_5zmrfhddbdxxmt33',
+                //     collectDeviceData: true,
+                //     paypalRequest: BraintreePayPalRequest(
+                //         amount: '1.00', displayName: 'Marco'),
+                //     cardEnabled: true);
 
-                BraintreeDropInResult? result =
-                    await BraintreeDropIn.start(request);
-                if (result != null) {
-                  print(result.paymentMethodNonce.description);
-                  print(result.paymentMethodNonce.nonce);
+                // BraintreeDropInResult? result =
+                //     await BraintreeDropIn.start(request);
+                // if (result != null) {
+                //   print(result.paymentMethodNonce.description);
+                //   print(result.paymentMethodNonce.nonce);
 
-                  final http.Response response = await http.post(Uri.parse(
-                      '$url?payment_method_nonce=${result.paymentMethodNonce.nonce}&device_data=${result.deviceData}'));
+                //   final http.Response response = await http.post(Uri.parse(
+                //       '$url?payment_method_nonce=${result.paymentMethodNonce.nonce}&device_data=${result.deviceData}'));
 
-                  final payResult = jsonDecode(response.body);
-                  if (payResult['result'] == 'success') print('payment done');
-                }
+                //   final payResult = jsonDecode(response.body);
+                //   if (payResult['result'] == 'success') print('payment done');
+                // }
               },
             ),
           ],
         )),
       ),
     );
+  }
+
+  Future<http.Response> fetchAlbum() {
+    return http.get(Uri.parse('https://jsonplaceholder.typicode.com/albums/1'));
   }
 }

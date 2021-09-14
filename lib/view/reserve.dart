@@ -44,53 +44,60 @@ class _ReserveState extends State<Reserve> {
 
   void _activateListeners() {
     final reservations = database.child('reservations/');
+    print(_timeChosen);
     reservations.onValue.listen((event) {
       if (event.snapshot.value != null) {
         final reservation = Map<String, dynamic>.from(event.snapshot.value);
-        reservation.forEach((key, value) {
-          String selectedDay = DateFormat('dd/MM/yyyy').format(_selectedDate!);
-          String dbDay = value['day'];
-          if (selectedDay == dbDay) {
-            String maxTimeText = value['hour'];
-            TimeOfDay _startTime = TimeOfDay(
-                hour: int.parse(maxTimeText.split(":")[0]),
-                minute: int.parse(maxTimeText.split(":")[1]));
+        if (reservation.isNotEmpty) {
+          reservation.forEach((key, value) {
+            String selectedDay =
+                DateFormat('dd/MM/yyyy').format(_selectedDate!);
+            String dbDay = value['day'];
+            if (selectedDay == dbDay) {
+              String maxTimeText = value['hour'];
+              TimeOfDay _startTime = TimeOfDay(
+                  hour: int.parse(maxTimeText.split(":")[0]),
+                  minute: int.parse(maxTimeText.split(":")[1]));
 
-            String minTimeText = value['duration'];
-            TimeOfDay _endTime = TimeOfDay(
-                hour: int.parse(minTimeText.split(":")[0]),
-                minute: int.parse(minTimeText.split(":")[1]));
+              String minTimeText = value['duration'];
+              TimeOfDay _endTime = TimeOfDay(
+                  hour: int.parse(minTimeText.split(":")[0]),
+                  minute: int.parse(minTimeText.split(":")[1]));
 
-            TimeOfDay _until;
-            _until = _timeChosen!.plusMinutes(int.parse(_selectedDuration!));
+              TimeOfDay _until;
+              if (_timeChosen != null) {
+                _until =
+                    _timeChosen!.plusMinutes(int.parse(_selectedDuration!));
 
-            double dbStartTime = toDouble(_startTime);
-            double dbEndTime = toDouble(_endTime);
-            double pickedStartTime = toDouble(_timeChosen!);
-            double pickedEndTime = toDouble(_until);
+                double dbStartTime = toDouble(_startTime);
+                double dbEndTime = toDouble(_endTime);
+                double pickedStartTime = toDouble(_timeChosen!);
+                double pickedEndTime = toDouble(_until);
 
-            if (dbStartTime <= pickedStartTime &&
-                dbEndTime >= pickedStartTime) {
-              _reservationValid = false;
-              _timeChosen = null;
-              _warning = 'Ja existe uma reserva a essa hora!';
-            } else if (dbStartTime <= pickedEndTime &&
-                dbEndTime >= pickedEndTime) {
-              _reservationValid = false;
-              _timeChosen = null;
-              _warning = 'Ja existe uma reserva a essa hora!';
-            } else if (pickedStartTime <= dbStartTime &&
-                dbEndTime <= pickedEndTime) {
-              _reservationValid = false;
-              _timeChosen = null;
-              _warning = 'Ja existe uma reserva a essa hora!';
+                if (dbStartTime <= pickedStartTime &&
+                    dbEndTime >= pickedStartTime) {
+                  _reservationValid = false;
+                  _timeChosen = null;
+                  _warning = 'Ja existe uma reserva a essa hora!';
+                } else if (dbStartTime <= pickedEndTime &&
+                    dbEndTime >= pickedEndTime) {
+                  _reservationValid = false;
+                  _timeChosen = null;
+                  _warning = 'Ja existe uma reserva a essa hora!';
+                } else if (pickedStartTime <= dbStartTime &&
+                    dbEndTime <= pickedEndTime) {
+                  _reservationValid = false;
+                  _timeChosen = null;
+                  _warning = 'Ja existe uma reserva a essa hora!';
+                } else {
+                  _reservationValid = true;
+                }
+              }
             } else {
               _reservationValid = true;
             }
-          } else {
-            _reservationValid = true;
-          }
-        });
+          });
+        }
       } else {
         _reservationValid = true;
       }
@@ -138,7 +145,7 @@ class _ReserveState extends State<Reserve> {
             setState(() {
               _timeChosen = value;
               _isNotNow = true;
-              _activateListeners();
+              if (_selectedDuration != null) _activateListeners();
             });
 //IF DATE CHOSEN IS NOW OR BEFORE
           } else {
@@ -246,7 +253,7 @@ class _ReserveState extends State<Reserve> {
             alignment: Alignment.topCenter,
             margin: EdgeInsets.all(10),
             constraints: BoxConstraints(
-                minHeight: 600, minWidth: double.infinity, maxHeight: 680),
+                minHeight: 600, minWidth: double.infinity, maxHeight: 650),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               //mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -397,24 +404,25 @@ class _ReserveState extends State<Reserve> {
                       style: TextStyle(fontSize: 15),
                     ),
                     onPressed: () {
-                      print(_reservationValid);
-                      print(_isNotNow);
-                      _activateListeners();
+                      //_activateListeners();
                       if (_reservationValid &&
                           _isNotNow &&
                           _selectedDuration != null) {
                         _reserve();
                         showToast(context: context);
+                        return;
                       } else if (!_reservationValid || !_isNotNow) {
                         _timeChosen = null;
                         _warning = 'Slot invalido!';
                         setState(() {
                           _warning2 = 'Slot invalido!';
                         });
+                        return;
                       } else if (_selectedDuration == null) {
                         setState(() {
                           _warning2 = 'Escolha uma duracao';
                         });
+                        return;
                       }
                     },
                   ),
