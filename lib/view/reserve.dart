@@ -277,15 +277,27 @@ class _ReserveState extends State<Reserve> {
                     ),
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Text(
+                    'Atencao!! Os slots reservados desaparecerao ' +
+                        'passados 30 minutos se nenhum pagamento for effectuado.',
+                    style: TextStyle(
+                      fontFamily: 'Roboto Condensed',
+                      fontSize: 16,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
                 Container(
                   decoration: BoxDecoration(
-                      border: Border.all(color: Colors.lime, width: 4),
+                      border: Border.all(color: Colors.lime, width: 2),
                       borderRadius: BorderRadius.circular(12)),
-                  margin: EdgeInsets.all(5),
+                  margin: EdgeInsets.all(0),
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.only(left: 5.0, right: 5),
                         child: Row(children: <Widget>[
                           Expanded(
 //TEXT SHOWING CHOSEN DATE////////////////////////////////////////////////
@@ -315,7 +327,7 @@ class _ReserveState extends State<Reserve> {
                         ]),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.only(left: 5.0, right: 5),
                         child: Row(children: <Widget>[
                           Expanded(
 //TEXT SHOWING CHOSEN TIME ////////////////////////////////////////////////
@@ -342,7 +354,7 @@ class _ReserveState extends State<Reserve> {
                         ]),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.only(left: 5.0, right: 5),
                         child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: <Widget>[
@@ -352,7 +364,8 @@ class _ReserveState extends State<Reserve> {
                                     fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                               Container(
-                                padding: EdgeInsets.all(15),
+                                padding:
+                                    const EdgeInsets.only(left: 5.0, right: 5),
                                 width: 120,
 //DROPDOWN LIST TO CHOOSE DURATION ////////////////////////////////////////////////
                                 child: DropdownButton<String>(
@@ -391,7 +404,7 @@ class _ReserveState extends State<Reserve> {
                 ),
                 Text(_warning2),
                 Container(
-                  padding: EdgeInsets.all(15),
+                  padding: const EdgeInsets.only(left: 5.0, right: 5),
                   width: 150,
 ////////////////////// BUTTON TO RESERVE ////////////////////////////////////////////////
                   child: ElevatedButton(
